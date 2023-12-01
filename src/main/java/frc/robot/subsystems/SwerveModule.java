@@ -7,7 +7,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.AnalogInput;
-import com.ctre.phoenix.motorcontrol.can.CANCoder;
+import com.ctre.phoenix.sensors.WPI_CANCoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -20,11 +20,10 @@ public class SwerveModule{
     private final CANSparkMax turningMotor;
 
     private final RelativeEncoder driveEncoder;
-    private final RelativeEncoder turningEncoder;
+    private final WPI_CANCoder turningEncoder;
 
     private final PIDController turningPidController;
 
-    private final CANCoder absoluteEncoder;
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
 
@@ -33,7 +32,6 @@ public class SwerveModule{
             
             this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
             this.absoluteEncoderReversed = absoluteEncoderReversed;
-            absoluteEncoder = new CANCoder(absoluteEncoderId);
 
             driveMotor = new CANSparkMax(driveMotorId, CANSparkMax.MotorType.kBrushless);
             turningMotor = new CANSparkMax(turningMotorId, CANSparkMax.MotorType.kBrushless);
@@ -42,7 +40,7 @@ public class SwerveModule{
             turningMotor.setInverted(turningMotorReversed);
 
             driveEncoder = driveMotor.getEncoder();
-            turningEncoder = turningMotor.getEncoder();
+            turningEncoder = new WPI_CANCoder(absoluteEncoderId);
 
             driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
             driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
@@ -72,7 +70,7 @@ public class SwerveModule{
     }
 
     public double getAbsoluteEncoderRad() {
-        double angle = absoluteEncoder.getPosition();
+        double angle = turningEncoder.getAbsolutePosition();
         angle -= absoluteEncoderOffsetRad;
         return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
     }
