@@ -25,9 +25,8 @@ public final class Constants {
 
   public static class DriveConstants {
 
-    //robot bitince ayarlanacak
-    public static final double kSagSolArasi = 62;
-    public static final double kOnArkaArasi = 62;
+    public static final double kSagSolArasi = 56.515;
+    public static final double kOnArkaArasi = 56.515;
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kOnArkaArasi / 2, kSagSolArasi / 2),
         new Translation2d(kOnArkaArasi / 2, -kSagSolArasi / 2),
@@ -35,17 +34,15 @@ public final class Constants {
         new Translation2d(-kOnArkaArasi / 2, -kSagSolArasi / 2)
     ); 
 
-    /* robot bitince ayarlanacak */
-    public static final int kFLDriveMotorPort = 8;
-    public static final int kBLDriveMotorPort = 2;
-    public static final int kFRDriveMotorPort = 6;
-    public static final int kBRDriveMotorPort = 4;
+    public static final int kFLDriveMotorPort = 1;
+    public static final int kBLDriveMotorPort = 12;
+    public static final int kFRDriveMotorPort = 62;
+    public static final int kBRDriveMotorPort = 14;
 
-    /* robot bitince ayarlanacak */
-    public static final int kFLTurningMotorPort = 7;
-    public static final int kBLTurningMotorPort = 1;
-    public static final int kFRTurningMotorPort = 5;
-    public static final int kBRTurningMotorPort = 3;
+    public static final int kFLTurningMotorPort = 3;
+    public static final int kBLTurningMotorPort = 13;
+    public static final int kFRTurningMotorPort = 2;
+    public static final int kBRTurningMotorPort = 15;
 
     public static final boolean kFLTurningEncoderReversed = true;
     public static final boolean kBLTurningEncoderReversed = true;

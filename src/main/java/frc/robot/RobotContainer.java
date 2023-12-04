@@ -25,7 +25,7 @@ public class RobotContainer {
         () -> -driverJoystick.getRawAxis(0),
         () -> driverJoystick.getRawAxis(1),
         () -> driverJoystick.getRawAxis(2), 
-        () -> !driverJoystick.getRawButton(4)
+        () -> !driverJoystick.getRawButton(5)
       )
     );
 
@@ -33,7 +33,7 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new JoystickButton(driverJoystick, 12).onTrue(new InstantCommand(swerveSubsystem::zeroHeading));
+    new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading));
   }
 
   public Command getAutonomousCommand() {

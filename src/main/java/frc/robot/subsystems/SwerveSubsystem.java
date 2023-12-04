@@ -66,6 +66,7 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public void zeroHeading() {
         gyro.reset();
+        System.out.println("RESETTED!");
     }
 
     public double getHeading() {
@@ -93,4 +94,4 @@ public class SwerveSubsystem extends SubsystemBase{
 
 }
 
-/* SwerveDriveOdometry ÇALIŞMIYOR!!!!!1! */
+/* SwerveDriveOdometry calismiyor!!!!!1! */
