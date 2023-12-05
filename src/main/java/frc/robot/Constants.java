@@ -20,7 +20,6 @@ public final class Constants {
     public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
     public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
     public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
-    public static final double kPTurning = 0.5;
   }
 
   public static class DriveConstants {
@@ -54,7 +53,7 @@ public final class Constants {
     public static final boolean kFRDriveEncoderReversed = false;
     public static final boolean kBRDriveEncoderReversed = false;
 
-    /* robot bitince ayarlanacak */
+    /* CANCODER GELINCE ayarlanacak */
     public static final int kFLDriveAbsoluteEncoderPort = 0;
     public static final int kBLDriveAbsoluteEncoderPort = 2;
     public static final int kFRDriveAbsoluteEncoderPort = 1;
@@ -65,7 +64,7 @@ public final class Constants {
     public static final boolean kFRDriveAbsoluteEncoderReversed = false;
     public static final boolean kBRDriveAbsoluteEncoderReversed = false;
 
-    /* robot bitince ayarlanacak */
+    /* CANCODER GELINCE ayarlanacak */
     public static final double kFLDriveAbsoluteEncoderOffsetRad = 0;
     public static final double kBLDriveAbsoluteEncoderOffsetRad = 0;
     public static final double kFRDriveAbsoluteEncoderOffsetRad = 0;
@@ -83,6 +82,14 @@ public final class Constants {
   
   public static class OIConstants {
     public static final double kDeadband = 0.05;
+  }
+
+  public static class PIDConstants{
+    /* ROBOT ÜZERİNDE TEST EDİLMELİ */
+    public static final double kPTurning = 0.5;
+    public static final double kPVelocity = 0.5;
+    public static final double kIVelocity = 0;
+    public static final double kDVelocity = 0;
   }
 
 } 

@@ -9,6 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.Constants.ModuleConstants;
+import frc.robot.Constants.PIDConstants;
 import frc.robot.Constants.DriveConstants;
 
 public class SwerveModule{
@@ -20,6 +21,7 @@ public class SwerveModule{
     private final RelativeEncoder turningEncoder;
 
     private final PIDController turningPidController;
+    private final PIDController velocityPidController;
 
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
@@ -44,7 +46,10 @@ public class SwerveModule{
             turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad);
             turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
 
-            turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
+            velocityPidController = new PIDController(PIDConstants.kPVelocity, PIDConstants.kIVelocity, PIDConstants.kDVelocity);
+            velocityPidController.enableContinuousInput(-DriveConstants.kTeleDriveMaxSpeedMetersPerSecond, DriveConstants.kTeleDriveMaxSpeedMetersPerSecond);
+
+            turningPidController = new PIDController(PIDConstants.kPTurning, 0, 0);
             turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
             resetEncoders();
@@ -87,8 +92,13 @@ public class SwerveModule{
             return;
         }
         
+        double currentVelocity = getDriveVelocity();
+        double velocityError = state.speedMetersPerSecond - currentVelocity;
+
+        double output = velocityPidController.calculate(velocityError, currentVelocity);
+
         state = SwerveModuleState.optimize(state, getState().angle);
-        driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        driveMotor.set(output);
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
         SmartDashboard.putString("Swerve[" + turningMotor.getDeviceId() + "] state", state.toString());
     }
