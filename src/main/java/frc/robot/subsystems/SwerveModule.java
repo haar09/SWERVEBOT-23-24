@@ -100,7 +100,12 @@ public class SwerveModule{
         state = SwerveModuleState.optimize(state, getState().angle);
         driveMotor.set(output);
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
-        SmartDashboard.putString("Swerve[" + turningMotor.getDeviceId() + "] state", state.toString());
+
+        SmartDashboard.putString("SwerveDrive[" + driveMotor.getDeviceId() + "] VELOCITY", Double.toString(getDriveVelocity()));
+        SmartDashboard.putString("SwerveDrive[" + driveMotor.getDeviceId() + "] POSITION", Double.toString(getDrivePosition()));
+
+        SmartDashboard.putString("SwerveTurn[" + turningMotor.getDeviceId() + "] VELOCITY", Double.toString(getTurningVelocity()));
+        SmartDashboard.putString("SwerveTurn[" + turningMotor.getDeviceId() + "] POSITION", Double.toString(getTurningPosition()));
     }
 
     public void stop(){
