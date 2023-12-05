@@ -88,7 +88,6 @@ public final class Constants {
     /* ROBOT ÜZERİNDE TEST EDİLMELİ */
     public static final double kPTurning = 0.5;
     public static final double kPVelocity = 0.5;
-    public static final double kIVelocity = 0;
     public static final double kDVelocity = 0;
   }
 
