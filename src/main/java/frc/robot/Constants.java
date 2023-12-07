@@ -74,19 +74,19 @@ public final class Constants {
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 6;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
   }
   
   public static class OIConstants {
-    public static final double kDeadband = 0.05;
+    public static final double kDeadband = 0.03;
   }
 
   public static class PIDConstants{
     /* ROBOT ÜZERİNDE TEST EDİLMELİ */
-    public static final double kPTurning = 0.5;
+    public static final double kPTurning = 0.1;
   }
 
 } 
