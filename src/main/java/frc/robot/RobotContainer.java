@@ -24,7 +24,7 @@ public class RobotContainer {
         swerveSubsystem,
         () -> -driverJoystick.getRawAxis(0),
         () -> driverJoystick.getRawAxis(1),
-        () -> driverJoystick.getRawAxis(2), 
+        () -> -driverJoystick.getRawAxis(2), 
         () -> !driverJoystick.getRawButton(5)
       )
     );
