@@ -34,7 +34,9 @@ public class SwerveModule{
             turningMotor = new CANSparkMax(turningMotorId, CANSparkMax.MotorType.kBrushless);
 
             driveMotor.setInverted(driveMotorReversed);
+            driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
             turningMotor.setInverted(turningMotorReversed);
+            turningMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
 
             driveEncoder = driveMotor.getEncoder();
             turningEncoder = turningMotor.getEncoder();

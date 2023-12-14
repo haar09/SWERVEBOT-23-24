@@ -9,12 +9,15 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.LimeLightLEDToggle;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class RobotContainer {
   
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final LimeLight LimeLight = new LimeLight();
   private final Joystick driverJoystick = new Joystick(0);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -34,6 +37,7 @@ public class RobotContainer {
 
   private void configureBindings() {
     new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading));
+    new JoystickButton(driverJoystick, 12).onTrue(new LimeLightLEDToggle(LimeLight));
   }
 
   public Command getAutonomousCommand() {
