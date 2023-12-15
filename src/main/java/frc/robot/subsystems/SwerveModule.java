@@ -5,6 +5,7 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 import frc.robot.Constants.ModuleConstants;
@@ -94,6 +95,13 @@ public class SwerveModule{
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
     }
 
+    public SwerveModulePosition getPosition(){
+        return new SwerveModulePosition(
+            getDrivePosition(),
+            new Rotation2d(getTurningPosition())
+        );
+    }
+    
     public void stop(){
         driveMotor.set(0);
         turningMotor.set(0);

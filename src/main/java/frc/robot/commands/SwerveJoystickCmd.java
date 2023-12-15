@@ -14,17 +14,18 @@ public class SwerveJoystickCmd extends CommandBase{
 
     private final SwerveSubsystem swerveSubsystem;
     private final Supplier<Double> xSpdFunc, ySpdFunc, turnSpdFunc;
-    private final Supplier<Boolean> fieldOrientedFunc;
+    private final Supplier<Boolean> fieldOrientedFunc, slowMode;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
     
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunc, Supplier<Double> ySpdFunc, Supplier<Double> turnSpdFunc,
-            Supplier<Boolean> fieldOrientedFunc){
+            Supplier<Boolean> fieldOrientedFunc, Supplier<Boolean> slowMode){
         this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunc = xSpdFunc;
         this.ySpdFunc = ySpdFunc;
         this.turnSpdFunc = turnSpdFunc;
         this.fieldOrientedFunc = fieldOrientedFunc;
+        this.slowMode = slowMode;
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
@@ -52,6 +53,12 @@ public class SwerveJoystickCmd extends CommandBase{
         xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
         ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
         turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
+
+        if (slowMode.get()){
+            xSpeed *= DriveConstants.kTeleDriveSlowModeMultiplier;
+            ySpeed *= DriveConstants.kTeleDriveSlowModeMultiplier;
+            turningSpeed *= DriveConstants.kTeleDriveSlowModeMultiplier;
+        }
 
         // construct desired chassis speed
         ChassisSpeeds chassisSpeeds;

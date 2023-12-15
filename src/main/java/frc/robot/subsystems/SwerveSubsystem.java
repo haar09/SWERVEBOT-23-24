@@ -2,8 +2,11 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -53,6 +56,7 @@ public class SwerveSubsystem extends SubsystemBase{
     );
 
     private AHRS gyro = new AHRS(SPI.Port.kMXP);
+    private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, new Rotation2d(0), getModulePositions());
 
     public SwerveSubsystem() {
         new Thread (() -> {
@@ -80,6 +84,15 @@ public class SwerveSubsystem extends SubsystemBase{
         return Rotation2d.fromDegrees(getHeading());
     }
 
+    public SwerveModulePosition[] getModulePositions() {
+        return new SwerveModulePosition[] {
+            FR.getPosition(),
+            FL.getPosition(),
+            BR.getPosition(),
+            BL.getPosition()
+      };
+    }
+
     public void stopModules() {
         FL.stop();
         FR.stop();
@@ -95,6 +108,18 @@ public class SwerveSubsystem extends SubsystemBase{
         BR.setDesiredState(desiredStates[3]);
     }
 
-}
+    public Pose2d getPose() {
+        return odometer.getPoseMeters();
+    }
 
-/* SwerveDriveOdometry calismiyor!!!!!1! */
+    public void resetOdometry(Pose2d pose) {
+        odometer.resetPosition(getRotation2d(), getModulePositions(), pose);
+    }
+
+    @Override
+    public void periodic() {
+        odometer.update(getRotation2d(), getModulePositions());
+        Shuffleboard.getTab("SmartDashboard").add("LOCATION:", getPose().getTranslation().toString(), "0");
+    }
+
+}
