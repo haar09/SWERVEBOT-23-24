@@ -1,28 +1,31 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.ShuffleboardInfo;
-
 import java.util.ArrayList;
 
-import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimeLight extends SubsystemBase{
     private final NetworkTable m_limelightTable;
     private double tv, tx, ty, ta;
     private ArrayList<Double> m_targetList;
     private final int MAX_ENTRIES = 50;
-    private final GenericEntry m_isTargetValid;
+    private final NetworkTableEntry m_isTargetValid;
     private final NetworkTableEntry m_ledEntry;
 
     public LimeLight(){
         m_limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
         m_targetList = new ArrayList<Double>(MAX_ENTRIES);
-        m_isTargetValid = ShuffleboardInfo.getInstance().getTargetEntry();
+
+        m_isTargetValid = m_limelightTable.getEntry("isTargetValid");
         m_ledEntry = m_limelightTable.getEntry("ledMode");
+        
+        SmartDashboard.putNumber("Led Mode", m_ledEntry.getNumber(0).intValue());
+        SmartDashboard.putBoolean("Limelight Target", m_isTargetValid.getBoolean(false));
+    
     }   
 
     @Override

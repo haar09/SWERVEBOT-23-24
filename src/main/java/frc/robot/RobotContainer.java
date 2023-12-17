@@ -25,6 +25,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.LimeLightFollowReflector;
 import frc.robot.commands.LimeLightLEDToggle;
+import frc.robot.commands.LimeLightRotateToTarget;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -43,8 +44,8 @@ public class RobotContainer {
         () -> -driverJoystick.getRawAxis(0),
         () -> driverJoystick.getRawAxis(1),
         () -> -driverJoystick.getRawAxis(2), 
-        () -> !driverJoystick.getRawButton(5),
-        () -> !driverJoystick.getRawButton(6) // bunu r1 yapacan
+        () -> !driverJoystick.getRawButton(5), //bu l1
+        () -> !driverJoystick.getRawButton(6) // bu r1
       )
     );
 
@@ -52,9 +53,15 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading));
-    new JoystickButton(driverJoystick, 10).onTrue(new LimeLightLEDToggle(LimeLight));
-    new JoystickButton(driverJoystick, 11).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem)); // bunu x falan yapacan
+    new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //ps butonu
+    new JoystickButton(driverJoystick, 10).onTrue(new LimeLightLEDToggle(LimeLight)); //options
+
+    new JoystickButton(driverJoystick, 2).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 0)); // bu yukarı ok
+    new JoystickButton(driverJoystick, 2).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 1)); // bu sağ ok
+    new JoystickButton(driverJoystick, 2).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 2)); // bu sol ok
+    
+    new JoystickButton(driverJoystick, 3).whileTrue(new LimeLightRotateToTarget(LimeLight)); // bu daire
+    new JoystickButton(driverJoystick, 1).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare
   }
 
   public Command getAutonomousCommand() {
@@ -65,10 +72,10 @@ public class RobotContainer {
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
       new Pose2d(0, 0, new Rotation2d(0)),
       List.of(
-        new Translation2d(1,0),
-        new Translation2d(1, -1)
+        new Translation2d(-1, 0),
+        new Translation2d(0, -1)
       ),
-      new Pose2d (2, -1, Rotation2d.fromDegrees(180)),
+      new Pose2d (-1, -1, Rotation2d.fromDegrees(0)),
       trajectoryConfig
     );
 

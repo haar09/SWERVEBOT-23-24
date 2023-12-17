@@ -53,6 +53,14 @@ public class SwerveModule{
             resetEncoders();
     }
 
+    public void switchIdleMode(){
+        if (driveMotor.getIdleMode() == CANSparkMax.IdleMode.kCoast) {
+            driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        } else {
+            driveMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        }
+    }
+
     public double getDrivePosition(){
         return driveEncoder.getPosition();
     }

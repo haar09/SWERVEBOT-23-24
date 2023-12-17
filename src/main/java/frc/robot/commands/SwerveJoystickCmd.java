@@ -6,6 +6,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.GlobalVariables;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -54,12 +55,16 @@ public class SwerveJoystickCmd extends CommandBase{
         ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
         turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
-        if (slowMode.get()){
+        if (!slowMode.get()){
             xSpeed *= DriveConstants.kTeleDriveSlowModeMultiplier;
             ySpeed *= DriveConstants.kTeleDriveSlowModeMultiplier;
             turningSpeed *= DriveConstants.kTeleDriveSlowModeMultiplier;
         }
 
+        if (GlobalVariables.getInstance().rotateToTargetSpeed != 0){
+            turningSpeed = GlobalVariables.getInstance().rotateToTargetSpeed;
+        }
+        
         // construct desired chassis speed
         ChassisSpeeds chassisSpeeds;
         if (fieldOrientedFunc.get()) {
