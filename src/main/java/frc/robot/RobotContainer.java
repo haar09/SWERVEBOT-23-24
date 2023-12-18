@@ -56,9 +56,8 @@ public class RobotContainer {
     new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //ps butonu
     new JoystickButton(driverJoystick, 10).onTrue(new LimeLightLEDToggle(LimeLight)); //options
 
-    new JoystickButton(driverJoystick, 2).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 0)); // bu yukarı ok
-    new JoystickButton(driverJoystick, 2).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 1)); // bu sağ ok
-    new JoystickButton(driverJoystick, 2).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 2)); // bu sol ok
+    new JoystickButton(driverJoystick, 4).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 0)); // üçgen
+    new JoystickButton(driverJoystick, 11).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 1)); // l3
     
     new JoystickButton(driverJoystick, 3).whileTrue(new LimeLightRotateToTarget(LimeLight)); // bu daire
     new JoystickButton(driverJoystick, 1).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare

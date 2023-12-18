@@ -108,7 +108,7 @@ public final class Constants {
 
   public static class PIDConstants{
     public static final double kPTurning = 0.6;
-    public static final double kPLimeLightRotate = 0.01;
+    public static final double kPLimeLightRotate = 0.005;
   }
 
 } 

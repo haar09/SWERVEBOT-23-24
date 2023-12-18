@@ -13,8 +13,7 @@ public class LimeLightRotateToTarget extends CommandBase{
         addRequirements(m_LimeLight);
     }
 
-    PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, 0);
-
+    PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, 0.0002);
     @Override
     public void initialize(){
         m_LimeLight.setLedMode(true);

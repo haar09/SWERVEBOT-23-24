@@ -30,9 +30,9 @@ public class LimeLightFollowReflector extends CommandBase{
         m_LimeLight.setLedMode(true);
     }
 
-    PIDController forwardController = new PIDController(0.01, 0, 0);
-    PIDController leftRighController = new PIDController(0.01, 0, 0);
-    ChassisSpeeds chassisSpeeds;
+    PIDController forwardController = new PIDController(3, 0, 0);
+    PIDController leftRighController = new PIDController(0.3, 0, 0);
+    ChassisSpeeds chassisSpeeds, chassisSpeeds2;
     SwerveModuleState[] moduleStates;
 
     @Override
@@ -40,31 +40,33 @@ public class LimeLightFollowReflector extends CommandBase{
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
         NetworkTableEntry ty = table.getEntry("ty");
         double targetOffsetAngle_Vertical = ty.getDouble(0.0);
-
+        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,0);
         if (mode==0){
             double angleToGoalDegrees = OIConstants.kLimeLightMountAngleDegrees + targetOffsetAngle_Vertical;
             double angleToGoalRadians = angleToGoalDegrees * (Math.PI / 180.0);
     
             double distanceFromLimelightToGoalMeters = (OIConstants.kGoalHeightMeters - OIConstants.kLimeLightHeightMeters) / Math.tan(angleToGoalRadians);
-        
+            if (targetOffsetAngle_Vertical==0) {distanceFromLimelightToGoalMeters = 0;}
             LimeLightRotateToTarget limeLightRotateToTarget = new LimeLightRotateToTarget(m_LimeLight);
             limeLightRotateToTarget.execute();
-            chassisSpeeds = new ChassisSpeeds(0, 0, GlobalVariables.getInstance().rotateToTargetSpeed);
-            moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);   
     
-            double forwardSpeed = forwardController.calculate(0, distanceFromLimelightToGoalMeters);
-            System.out.println("Forward Speed: " + forwardSpeed);
-            chassisSpeeds = new ChassisSpeeds(forwardSpeed, 0, 0);
+            double forwardSpeed = forwardController.calculate(0, distanceFromLimelightToGoalMeters-1);
+
+            double align = GlobalVariables.getInstance().rotateToTargetSpeed/2;
+
+            align = Math.abs(align) > 0.07 ? align : 0;
+
+            chassisSpeeds = new ChassisSpeeds(0, -forwardSpeed, align);
         } else {
             double tx = -table.getEntry("tx").getDouble(0.0);
             if (mode==1 && tx>0){
                 double rightSpeed = leftRighController.calculate(0, tx);
-                System.out.println("Right Speed: " + rightSpeed);
-                chassisSpeeds = new ChassisSpeeds(0, rightSpeed, 0);
-            } else if (mode==2 && tx<0) {
+                chassisSpeeds = new ChassisSpeeds(rightSpeed, 0, 0);
+            } else if (tx<0) {
                 double leftSpeed = leftRighController.calculate(0, tx);
-                System.out.println("Left Speed: " + leftSpeed);
-                chassisSpeeds = new ChassisSpeeds(0, leftSpeed, 0);
+                chassisSpeeds = new ChassisSpeeds(leftSpeed, 0, 0);
+            } else{
+            System.out.println("NONE");
             }
         }
 
