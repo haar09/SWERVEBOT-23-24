@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTable;
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.PIDConstants;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -32,6 +34,7 @@ public class LimeLightFollowReflector extends CommandBase{
 
     PIDController forwardController = new PIDController(3, 0, 0);
     PIDController leftRighController = new PIDController(0.3, 0, 0);
+    PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, 0.0002);
     ChassisSpeeds chassisSpeeds, chassisSpeeds2;
     SwerveModuleState[] moduleStates;
 
@@ -41,33 +44,49 @@ public class LimeLightFollowReflector extends CommandBase{
         NetworkTableEntry ty = table.getEntry("ty");
         double targetOffsetAngle_Vertical = ty.getDouble(0.0);
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,0);
-        if (mode==0){
+        if (m_LimeLight.isTargetValid()) {
+        if (mode==0) {
+            /* v1
             double angleToGoalDegrees = OIConstants.kLimeLightMountAngleDegrees + targetOffsetAngle_Vertical;
             double angleToGoalRadians = angleToGoalDegrees * (Math.PI / 180.0);
     
-            double distanceFromLimelightToGoalMeters = (OIConstants.kGoalHeightMeters - OIConstants.kLimeLightHeightMeters) / Math.tan(angleToGoalRadians);
+            double distanceFromLimelightToGoalMeters = ((OIConstants.kGoalHeightMeters - OIConstants.kLimeLightHeightMeters) / Math.tan(angleToGoalRadians)) - 1;
             if (targetOffsetAngle_Vertical==0) {distanceFromLimelightToGoalMeters = 0;}
             LimeLightRotateToTarget limeLightRotateToTarget = new LimeLightRotateToTarget(m_LimeLight);
             limeLightRotateToTarget.execute();
     
-            double forwardSpeed = forwardController.calculate(0, distanceFromLimelightToGoalMeters-1);
+            double forwardSpeed = forwardController.calculate(0, distanceFromLimelightToGoalMeters);
 
             double align = GlobalVariables.getInstance().rotateToTargetSpeed/2;
 
             align = Math.abs(align) > 0.07 ? align : 0;
 
             chassisSpeeds = new ChassisSpeeds(0, -forwardSpeed, align);
-        } else {
+            */
+            // v2
+            Pose2d targetPose = m_LimeLight.getTargetPose();
+
+            Pose2d offsetPose = new Pose2d(
+                targetPose.getTranslation().getX() - 1 * targetPose.getRotation().getCos(),
+                targetPose.getTranslation().getY() - 1 * targetPose.getRotation().getSin(), 
+                targetPose.getRotation()
+            );
+
+            double forwardSpeed = forwardController.calculate(0, offsetPose.getTranslation().getX());
+            double leftRightSpeed = leftRighController.calculate(0, offsetPose.getTranslation().getY());
+            double angle = thetaController.calculate(0, targetPose.getRotation().getDegrees());
+
+            chassisSpeeds = new ChassisSpeeds(forwardSpeed, leftRightSpeed, angle);
+
+        } else if (mode==1) {
             double tx = -table.getEntry("tx").getDouble(0.0);
-            if (mode==1 && tx>0){
+            if (tx!=0){
                 double rightSpeed = leftRighController.calculate(0, tx);
                 chassisSpeeds = new ChassisSpeeds(rightSpeed, 0, 0);
-            } else if (tx<0) {
-                double leftSpeed = leftRighController.calculate(0, tx);
-                chassisSpeeds = new ChassisSpeeds(leftSpeed, 0, 0);
-            } else{
-            System.out.println("NONE");
             }
+        }
+        } else {
+            chassisSpeeds = new ChassisSpeeds(0, 0, 0);
         }
 
         moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);

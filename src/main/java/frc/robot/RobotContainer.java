@@ -44,8 +44,8 @@ public class RobotContainer {
         () -> -driverJoystick.getRawAxis(0),
         () -> driverJoystick.getRawAxis(1),
         () -> -driverJoystick.getRawAxis(2), 
-        () -> !driverJoystick.getRawButton(5), //bu l1
-        () -> !driverJoystick.getRawButton(6) // bu r1
+        () -> !driverJoystick.getRawButton(5), //bu L1
+        () -> !driverJoystick.getRawButton(6) // bu R1
       )
     );
 
@@ -57,7 +57,7 @@ public class RobotContainer {
     new JoystickButton(driverJoystick, 10).onTrue(new LimeLightLEDToggle(LimeLight)); //options
 
     new JoystickButton(driverJoystick, 4).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 0)); // üçgen
-    new JoystickButton(driverJoystick, 11).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 1)); // l3
+    new JoystickButton(driverJoystick, 11).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 1)); // L3
     
     new JoystickButton(driverJoystick, 3).whileTrue(new LimeLightRotateToTarget(LimeLight)); // bu daire
     new JoystickButton(driverJoystick, 1).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare
