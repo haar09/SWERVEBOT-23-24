@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 
 public class SwerveSubsystem extends SubsystemBase{
     
@@ -60,6 +61,7 @@ public class SwerveSubsystem extends SubsystemBase{
 
     private AHRS gyro = new AHRS(SPI.Port.kMXP);
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, new Rotation2d(0), getModulePositions());
+    private final Field2d field = new Field2d();
 
     public SwerveSubsystem() {
         new Thread (() -> {
@@ -70,24 +72,24 @@ public class SwerveSubsystem extends SubsystemBase{
                 }
             }
         }).start();
-        SmartDashboard.putData("Field", new Field2d());
+        SmartDashboard.putData("Field", field);
         SmartDashboard.putData("Gyro", gyro);
         SmartDashboard.putData("Swerve Drive", new Sendable() {
             @Override
             public void initSendable(SendableBuilder builder) {
               builder.setSmartDashboardType("SwerveDrive");
           
-              builder.addDoubleProperty("Front Left Angle", () -> Math.IEEEremainder(FL.getTurningPosition(), 360), null);
-              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity(), null);
+              builder.addDoubleProperty("Front Left Angle", () -> FL.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
+              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
           
-              builder.addDoubleProperty("Front Right Angle", () -> Math.IEEEremainder(FR.getTurningPosition(), 360), null);
-              builder.addDoubleProperty("Front Right Velocity", () -> -FR.getDriveVelocity(), null);
+              builder.addDoubleProperty("Front Right Angle", () -> FR.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
+              builder.addDoubleProperty("Front Right Velocity", () -> -FR.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
           
-              builder.addDoubleProperty("Back Left Angle", () -> Math.IEEEremainder(BL.getTurningPosition(), 360), null);
-              builder.addDoubleProperty("Back Left Velocity", () -> -BL.getDriveVelocity(), null);
+              builder.addDoubleProperty("Back Left Angle", () -> BL.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
+              builder.addDoubleProperty("Back Left Velocity", () -> -BL.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
           
-              builder.addDoubleProperty("Back Right Angle", () -> Math.IEEEremainder(BR.getTurningPosition(), 360), null);
-              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity(), null);
+              builder.addDoubleProperty("Back Right Angle", () -> BR.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
+              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
           
               builder.addDoubleProperty("Robot Angle", () -> getHeading(), null);
             }
@@ -143,6 +145,7 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         odometer.update(getRotation2d(), getModulePositions());
+        field.setRobotPose(new Pose2d(getPose().getY(), getPose().getX(), getPose().getRotation()));
     }
 
     public void switchIdleMode(){
