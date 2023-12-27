@@ -40,7 +40,6 @@ public class LimeLight extends SubsystemBase{
         ty = m_limelightTable.getEntry("ty").getDouble(0);
         ta = m_limelightTable.getEntry("ta").getDouble(0);
         target = m_limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]);
-        target = m_limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]);
 
         m_isTargetValid.setBoolean(tv == 1.0);
 
