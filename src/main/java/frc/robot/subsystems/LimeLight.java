@@ -27,8 +27,6 @@ public class LimeLight extends SubsystemBase{
         m_isTargetValid = m_limelightTable.getEntry("isTargetValid");
         m_ledEntry = m_limelightTable.getEntry("ledMode");
 
-
-        SmartDashboard.putNumber("Led Mode", m_ledEntry.getNumber(0).intValue());
         SmartDashboard.putBoolean("Limelight Target", m_isTargetValid.getBoolean(false));
         Shuffleboard.getTab("stream").addCamera("stream", "Limelight", "http://10.69.89.11:5800/stream.mjpg");
     }
@@ -92,6 +90,7 @@ public class LimeLight extends SubsystemBase{
             modeInt = 1;
         }
         m_ledEntry.setNumber((modeInt));
+        SmartDashboard.putBoolean("Led On/Off", mode);
     }
 
 }

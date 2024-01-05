@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.AbsoluteSensorRange;
+import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
@@ -19,6 +21,7 @@ public class SwerveModule{
 
     private final RelativeEncoder driveEncoder;
     private final RelativeEncoder turningEncoder;
+    private final CANCoder absoluteEncoder;
 
     private final PIDController turningPidController;
 
@@ -41,6 +44,9 @@ public class SwerveModule{
 
             driveEncoder = driveMotor.getEncoder();
             turningEncoder = turningMotor.getEncoder();
+
+            absoluteEncoder = new CANCoder(absoluteEncoderId);
+            absoluteEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Unsigned_0_to_360);
 
             driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
             driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
@@ -78,7 +84,7 @@ public class SwerveModule{
     }
 
     public double getAbsoluteEncoderRad() {
-        double angle = turningEncoder.getPosition();
+        double angle = absoluteEncoder.getAbsolutePosition() * ModuleConstants.kTurningEncoderRot2Rad;
         angle -= absoluteEncoderOffsetRad;
         return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
     }

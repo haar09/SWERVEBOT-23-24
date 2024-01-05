@@ -54,11 +54,10 @@ public final class Constants {
     public static final boolean kFRDriveEncoderReversed = false;
     public static final boolean kBRDriveEncoderReversed = false;
 
-    /* CANCODER GELINCE ayarlanacak */
-    public static final int kFLDriveAbsoluteEncoderPort = 0;
-    public static final int kBLDriveAbsoluteEncoderPort = 2;
-    public static final int kFRDriveAbsoluteEncoderPort = 1;
-    public static final int kBRDriveAbsoluteEncoderPort = 3;
+    public static final int kFLDriveAbsoluteEncoderPort = 51; //saat yönü negatif
+    public static final int kBLDriveAbsoluteEncoderPort = 50;
+    public static final int kFRDriveAbsoluteEncoderPort = 52;
+    public static final int kBRDriveAbsoluteEncoderPort = 53;
 
     public static final boolean kFLDriveAbsoluteEncoderReversed = false;
     public static final boolean kBLDriveAbsoluteEncoderReversed = false;

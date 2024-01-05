@@ -79,17 +79,17 @@ public class SwerveSubsystem extends SubsystemBase{
             public void initSendable(SendableBuilder builder) {
               builder.setSmartDashboardType("SwerveDrive");
           
-              builder.addDoubleProperty("Front Left Angle", () -> FL.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
-              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
+              builder.addDoubleProperty("Front Left Angle", () -> FL.getTurningPosition() / ModuleConstants.kTurningEncoderRot2Rad, null);
+              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Front Right Angle", () -> FR.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
-              builder.addDoubleProperty("Front Right Velocity", () -> -FR.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
+              builder.addDoubleProperty("Front Right Angle", () -> -FR.getTurningPosition() / ModuleConstants.kTurningEncoderRot2Rad, null);
+              builder.addDoubleProperty("Front Right Velocity", () -> FR.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Left Angle", () -> BL.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
-              builder.addDoubleProperty("Back Left Velocity", () -> -BL.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
+              builder.addDoubleProperty("Back Left Angle", () -> -BL.getTurningPosition() / ModuleConstants.kTurningEncoderRot2Rad, null);
+              builder.addDoubleProperty("Back Left Velocity", () -> BL.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Right Angle", () -> BR.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
-              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
+              builder.addDoubleProperty("Back Right Angle", () -> BR.getTurningPosition() / ModuleConstants.kTurningEncoderRot2Rad, null);
+              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity(), null);
           
               builder.addDoubleProperty("Robot Angle", () -> getHeading(), null);
             }
@@ -145,7 +145,7 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         odometer.update(getRotation2d(), getModulePositions());
-        field.setRobotPose(new Pose2d(getPose().getY(), getPose().getX(), getPose().getRotation()));
+        field.setRobotPose(new Pose2d(-getPose().getY(), getPose().getX(), getPose().getRotation()));
     }
 
     public void switchIdleMode(){

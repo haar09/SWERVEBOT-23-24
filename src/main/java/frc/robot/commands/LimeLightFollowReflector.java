@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.DriveConstants;
@@ -32,8 +33,8 @@ public class LimeLightFollowReflector extends CommandBase{
         m_LimeLight.setLedMode(true);
     }
 
-    PIDController forwardController = new PIDController(3, 0, 0);
-    PIDController leftRighController = new PIDController(0.3, 0, 0);
+    PIDController forwardController = new PIDController(2, 0, 0);
+    PIDController leftRighController = new PIDController(0.03, 0, 0);
     PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, 0.0002);
     ChassisSpeeds chassisSpeeds, chassisSpeeds2;
     SwerveModuleState[] moduleStates;
@@ -67,14 +68,23 @@ public class LimeLightFollowReflector extends CommandBase{
             Pose2d targetPose = m_LimeLight.getTargetPose();
 
             Pose2d offsetPose = new Pose2d(
-                targetPose.getTranslation().getX() - 1 * targetPose.getRotation().getCos(),
-                targetPose.getTranslation().getY() - 1 * targetPose.getRotation().getSin(), 
+                targetPose.getTranslation().getX() - 0.5 * Math.cos(targetPose.getRotation().getRadians()),
+                targetPose.getTranslation().getY() - 0.5 * Math.sin(targetPose.getRotation().getRadians()), 
                 targetPose.getRotation()
             );
+
+            SmartDashboard.putNumber("x1", targetPose.getX());
+            SmartDashboard.putNumber("y1", targetPose.getY());
+
+            SmartDashboard.putNumber("x2", offsetPose.getX());
+            SmartDashboard.putNumber("y2", offsetPose.getY());
 
             double forwardSpeed = forwardController.calculate(0, offsetPose.getTranslation().getX());
             double leftRightSpeed = leftRighController.calculate(0, offsetPose.getTranslation().getY());
             double angle = thetaController.calculate(0, targetPose.getRotation().getDegrees());
+
+            forwardSpeed = Math.abs(forwardSpeed) > 0.07 ? forwardSpeed : 0;
+            leftRightSpeed = Math.abs(leftRightSpeed) > 0.07 ? leftRightSpeed : 0;
 
             chassisSpeeds = new ChassisSpeeds(forwardSpeed, leftRightSpeed, angle);
 
@@ -90,7 +100,7 @@ public class LimeLightFollowReflector extends CommandBase{
         }
 
         moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-        swerveSubsystem.setModuleStates(moduleStates);
+        //swerveSubsystem.setModuleStates(moduleStates);
     }
         
 
