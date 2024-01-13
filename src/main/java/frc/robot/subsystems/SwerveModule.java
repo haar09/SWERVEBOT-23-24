@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.hardware.core.CoreCANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
@@ -7,7 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PIDConstants;
 import frc.robot.Constants.DriveConstants;
@@ -19,17 +20,18 @@ public class SwerveModule{
 
     private final RelativeEncoder driveEncoder;
     private final RelativeEncoder turningEncoder;
+    private final CoreCANcoder absoluteEncoder;
 
     private final PIDController turningPidController;
 
-    private final boolean absoluteEncoderReversed;
-    private final double absoluteEncoderOffsetRad;
+    //private final boolean absoluteEncoderReversed;
+    private final double absoluteEncoderOffsetDeg;
 
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
         int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed){
             
-            this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
-            this.absoluteEncoderReversed = absoluteEncoderReversed;
+            this.absoluteEncoderOffsetDeg = absoluteEncoderOffset;
+            //this.absoluteEncoderReversed = absoluteEncoderReversed;
 
             driveMotor = new CANSparkMax(driveMotorId, CANSparkMax.MotorType.kBrushless);
             turningMotor = new CANSparkMax(turningMotorId, CANSparkMax.MotorType.kBrushless);
@@ -41,6 +43,10 @@ public class SwerveModule{
 
             driveEncoder = driveMotor.getEncoder();
             turningEncoder = turningMotor.getEncoder();
+
+            absoluteEncoder = new CoreCANcoder(absoluteEncoderId);
+            //absoluteEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+            //absoluteEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
             driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
             driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
@@ -57,7 +63,7 @@ public class SwerveModule{
         if (driveMotor.getIdleMode() == CANSparkMax.IdleMode.kCoast) {
             driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
         } else {
-            driveMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            driveMotor.setIdleMode(CANSparkMax.IdleMode.kCoast); 
         }
     }
 
@@ -77,15 +83,21 @@ public class SwerveModule{
         return turningEncoder.getVelocity();
     }
 
+    public double getAbsolutePosition(){
+        //return absoluteEncoder.getAbsolutePosition().getValue();
+        return 1;
+    }
+
     public double getAbsoluteEncoderRad() {
-        double angle = turningEncoder.getPosition();
-        angle -= absoluteEncoderOffsetRad;
-        return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
+		//double angle = Math.toRadians(absoluteEncoder.getAbsolutePosition().getValue());
+		//SmartDashboard.putString(this.driveMotor.getDeviceId() +"Abs. Error", absoluteEncoder.getLastError().toString);
+        return 1;
     }
 
     public void resetEncoders(){
         driveEncoder.setPosition(0);
-        turningEncoder.setPosition(getAbsoluteEncoderRad());
+        //absoluteEncoder.getAbsolutePosition();
+        turningEncoder.setPosition(Math.toRadians(90));
     }
 
     public SwerveModuleState getState(){

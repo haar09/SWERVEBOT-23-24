@@ -44,32 +44,31 @@ public final class Constants {
     public static final int kFRTurningMotorPort = 2;
     public static final int kBRTurningMotorPort = 15;
 
-    public static final boolean kFLTurningEncoderReversed = true;
-    public static final boolean kBLTurningEncoderReversed = true;
-    public static final boolean kFRTurningEncoderReversed = true;
-    public static final boolean kBRTurningEncoderReversed = true;
+    public static final boolean kFLTurningEncoderReversed = false;
+    public static final boolean kBLTurningEncoderReversed = false;
+    public static final boolean kFRTurningEncoderReversed = false;
+    public static final boolean kBRTurningEncoderReversed = false;
 
     public static final boolean kFLDriveEncoderReversed = true;
-    public static final boolean kBLDriveEncoderReversed = true;
+    public static final boolean kBLDriveEncoderReversed = false;
     public static final boolean kFRDriveEncoderReversed = false;
     public static final boolean kBRDriveEncoderReversed = false;
 
-    /* CANCODER GELINCE ayarlanacak */
-    public static final int kFLDriveAbsoluteEncoderPort = 0;
-    public static final int kBLDriveAbsoluteEncoderPort = 2;
-    public static final int kFRDriveAbsoluteEncoderPort = 1;
-    public static final int kBRDriveAbsoluteEncoderPort = 3;
+    public static final int kFLDriveAbsoluteEncoderPort = 51; //saat yönü pozitif
+    public static final int kBLDriveAbsoluteEncoderPort = 50; //saat yönü pozitif
+    public static final int kFRDriveAbsoluteEncoderPort = 52; //saat yönü pozitif
+    public static final int kBRDriveAbsoluteEncoderPort = 53; //saat yönü pozitif
 
-    public static final boolean kFLDriveAbsoluteEncoderReversed = false;
-    public static final boolean kBLDriveAbsoluteEncoderReversed = false;
-    public static final boolean kFRDriveAbsoluteEncoderReversed = false;
-    public static final boolean kBRDriveAbsoluteEncoderReversed = false;
+    public static final boolean kFLDriveAbsoluteEncoderReversed = true;
+    public static final boolean kBLDriveAbsoluteEncoderReversed = true;
+    public static final boolean kFRDriveAbsoluteEncoderReversed = true;
+    public static final boolean kBRDriveAbsoluteEncoderReversed = true;
 
     /* CANCODER GELINCE ayarlanacak */
-    public static final double kFLDriveAbsoluteEncoderOffsetRad = 0;
-    public static final double kBLDriveAbsoluteEncoderOffsetRad = 0;
-    public static final double kFRDriveAbsoluteEncoderOffsetRad = 0;
-    public static final double kBRDriveAbsoluteEncoderOffsetRad = 0;
+    public static final double kFLDriveAbsoluteEncoderOffsetDeg = 0;
+    public static final double kBLDriveAbsoluteEncoderOffsetDeg = 0;
+    public static final double kFRDriveAbsoluteEncoderOffsetDeg = 0;
+    public static final double kBRDriveAbsoluteEncoderOffsetDeg = 0;
 
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double kPhysicalMaxSpeedMetersPerSecond = 35;

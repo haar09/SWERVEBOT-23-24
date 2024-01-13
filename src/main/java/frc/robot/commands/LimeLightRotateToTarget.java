@@ -1,12 +1,12 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.PIDConstants;
 import frc.robot.subsystems.LimeLight;
 
-public class LimeLightRotateToTarget extends CommandBase{
+public class LimeLightRotateToTarget extends Command{
     private final LimeLight m_LimeLight;
     public LimeLightRotateToTarget(LimeLight subsystem){
         this.m_LimeLight = subsystem;

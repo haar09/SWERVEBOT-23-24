@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.Constants.ModuleConstants;
 
 public class SwerveSubsystem extends SubsystemBase{
     
@@ -25,7 +24,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kFLDriveEncoderReversed,
         DriveConstants.kFLTurningEncoderReversed,
         DriveConstants.kFLDriveAbsoluteEncoderPort,
-        DriveConstants.kFLDriveAbsoluteEncoderOffsetRad,
+        DriveConstants.kFLDriveAbsoluteEncoderOffsetDeg,
         DriveConstants.kFLDriveAbsoluteEncoderReversed
     );
 
@@ -35,7 +34,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kFRDriveEncoderReversed,
         DriveConstants.kFRTurningEncoderReversed,
         DriveConstants.kFRDriveAbsoluteEncoderPort,
-        DriveConstants.kFRDriveAbsoluteEncoderOffsetRad,
+        DriveConstants.kFRDriveAbsoluteEncoderOffsetDeg,
         DriveConstants.kFRDriveAbsoluteEncoderReversed
     );
 
@@ -45,7 +44,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kBLDriveEncoderReversed,
         DriveConstants.kBLTurningEncoderReversed,
         DriveConstants.kBLDriveAbsoluteEncoderPort,
-        DriveConstants.kBLDriveAbsoluteEncoderOffsetRad,
+        DriveConstants.kBLDriveAbsoluteEncoderOffsetDeg,
         DriveConstants.kBLDriveAbsoluteEncoderReversed
     );
 
@@ -55,7 +54,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kBRDriveEncoderReversed,
         DriveConstants.kBRTurningEncoderReversed,
         DriveConstants.kBRDriveAbsoluteEncoderPort,
-        DriveConstants.kBRDriveAbsoluteEncoderOffsetRad,
+        DriveConstants.kBRDriveAbsoluteEncoderOffsetDeg,
         DriveConstants.kBRDriveAbsoluteEncoderReversed
     );
 
@@ -79,26 +78,53 @@ public class SwerveSubsystem extends SubsystemBase{
             public void initSendable(SendableBuilder builder) {
               builder.setSmartDashboardType("SwerveDrive");
           
-              builder.addDoubleProperty("Front Left Angle", () -> FL.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
-              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
+              builder.addDoubleProperty("Front Left Angle", () -> FL.getAbsolutePosition()+180, null);
+              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Front Right Angle", () -> FR.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
-              builder.addDoubleProperty("Front Right Velocity", () -> -FR.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
+              builder.addDoubleProperty("Front Right Angle", () -> -FR.getAbsolutePosition()+180, null);
+              builder.addDoubleProperty("Front Right Velocity", () -> FR.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Left Angle", () -> BL.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
-              builder.addDoubleProperty("Back Left Velocity", () -> -BL.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
+              builder.addDoubleProperty("Back Left Angle", () -> -BL.getAbsolutePosition()+180, null);
+              builder.addDoubleProperty("Back Left Velocity", () -> BL.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Right Angle", () -> BR.getTurningPosition() / (ModuleConstants.kTurningEncoderRot2Rad), null);
-              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity() / (ModuleConstants.kDriveEncoderRPM2MeterPerSec), null);
+              builder.addDoubleProperty("Back Right Angle", () -> BR.getAbsolutePosition()+180, null);
+              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity(), null);
           
               builder.addDoubleProperty("Robot Angle", () -> getHeading(), null);
             }
           });
+          SmartDashboard.putData("NEOSwerve Drive", new Sendable() {
+            @Override
+            public void initSendable(SendableBuilder builder) {
+              builder.setSmartDashboardType("SwerveDrive");
+          
+              builder.addDoubleProperty("Front Left Angle", () -> FL.getTurningPosition(), null);
+              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity(), null);
+          
+              builder.addDoubleProperty("Front Right Angle", () -> -FR.getTurningPosition(), null);
+              builder.addDoubleProperty("Front Right Velocity", () -> FR.getDriveVelocity(), null);
+          
+              builder.addDoubleProperty("Back Left Angle", () -> -BL.getTurningPosition(), null);
+              builder.addDoubleProperty("Back Left Velocity", () -> BL.getDriveVelocity(), null);
+          
+              builder.addDoubleProperty("Back Right Angle", () -> BR.getTurningPosition(), null);
+              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity(), null);
+          
+              builder.addDoubleProperty("Robot Angle", () -> getHeading(), null);
+            }
+          });
+        SmartDashboard.putNumber("fl", FL.getAbsolutePosition());
+        SmartDashboard.putNumber("fR", FR.getAbsolutePosition());
+        SmartDashboard.putNumber("bl", BL.getAbsolutePosition());
+        SmartDashboard.putNumber("br", BR.getAbsolutePosition());
     }
 
     public void zeroHeading() {
         gyro.reset();
-
+        FL.resetEncoders();
+        FR.resetEncoders();
+        BL.resetEncoders();
+        BR.resetEncoders();
         System.out.println("RESETTED!");
     }
 
@@ -145,7 +171,7 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         odometer.update(getRotation2d(), getModulePositions());
-        field.setRobotPose(new Pose2d(getPose().getY(), getPose().getX(), getPose().getRotation()));
+        field.setRobotPose(new Pose2d(-getPose().getY(), getPose().getX(), getPose().getRotation()));
     }
 
     public void switchIdleMode(){
