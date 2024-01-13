@@ -73,18 +73,9 @@ public class LimeLightFollowReflector extends Command{
                 targetPose.getRotation()
             );
 
-            SmartDashboard.putNumber("x1", targetPose.getX());
-            SmartDashboard.putNumber("y1", targetPose.getY());
-
-            SmartDashboard.putNumber("x2", offsetPose.getX());
-            SmartDashboard.putNumber("y2", offsetPose.getY());
-
             double forwardSpeed = forwardController.calculate(0, offsetPose.getTranslation().getX());
             double leftRightSpeed = leftRighController.calculate(0, offsetPose.getTranslation().getY());
             double angle = thetaController.calculate(0, targetPose.getRotation().getDegrees());
-
-            forwardSpeed = Math.abs(forwardSpeed) > 0.07 ? forwardSpeed : 0;
-            leftRightSpeed = Math.abs(leftRightSpeed) > 0.07 ? leftRightSpeed : 0;
 
             chassisSpeeds = new ChassisSpeeds(forwardSpeed, leftRightSpeed, angle);
 
@@ -100,7 +91,7 @@ public class LimeLightFollowReflector extends Command{
         }
 
         moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
-        //swerveSubsystem.setModuleStates(moduleStates);
+        swerveSubsystem.setModuleStates(moduleStates);
     }
         
 
