@@ -73,41 +73,21 @@ public class SwerveSubsystem extends SubsystemBase{
         }).start();
         SmartDashboard.putData("Field", field);
         SmartDashboard.putData("Gyro", gyro);
-        SmartDashboard.putData("Swerve Drive", new Sendable() {
+          SmartDashboard.putData("Swerve Drive", new Sendable() {
             @Override
             public void initSendable(SendableBuilder builder) {
               builder.setSmartDashboardType("SwerveDrive");
           
-              builder.addDoubleProperty("Front Left Angle", () -> FL.getAbsolutePosition()+90, null);
+              builder.addDoubleProperty("Front Left Angle", () -> Math.toDegrees(FL.getTurningPosition())-90, null);
               builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Front Right Angle", () -> FR.getAbsolutePosition()+90, null);
+              builder.addDoubleProperty("Front Right Angle", () -> Math.toDegrees(FR.getTurningPosition())-90, null);
               builder.addDoubleProperty("Front Right Velocity", () -> FR.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Left Angle", () -> BL.getAbsolutePosition()+90, null);
+              builder.addDoubleProperty("Back Left Angle", () -> Math.toDegrees(BL.getTurningPosition())-90, null);
               builder.addDoubleProperty("Back Left Velocity", () -> BL.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Right Angle", () -> BR.getAbsolutePosition()+90, null);
-              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity(), null);
-          
-              builder.addDoubleProperty("Robot Angle", () -> getHeading(), null);
-            }
-          });
-          SmartDashboard.putData("NEOSwerve Drive", new Sendable() {
-            @Override
-            public void initSendable(SendableBuilder builder) {
-              builder.setSmartDashboardType("SwerveDrive");
-          
-              builder.addDoubleProperty("Front Left Angle", () -> Math.toDegrees(FL.getTurningPosition()), null);
-              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity(), null);
-          
-              builder.addDoubleProperty("Front Right Angle", () -> Math.toDegrees(FR.getTurningPosition()), null);
-              builder.addDoubleProperty("Front Right Velocity", () -> FR.getDriveVelocity(), null);
-          
-              builder.addDoubleProperty("Back Left Angle", () -> Math.toDegrees(BL.getTurningPosition()), null);
-              builder.addDoubleProperty("Back Left Velocity", () -> BL.getDriveVelocity(), null);
-          
-              builder.addDoubleProperty("Back Right Angle", () -> Math.toDegrees(BR.getTurningPosition()), null);
+              builder.addDoubleProperty("Back Right Angle", () -> Math.toDegrees(BR.getTurningPosition())-90, null);
               builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity(), null);
           
               builder.addDoubleProperty("Robot Angle", () -> getHeading(), null);
@@ -120,6 +100,7 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     public void zeroHeading() {
+        gyro.reset();
         FL.resetEncoders();
         FR.resetEncoders();
         BL.resetEncoders();

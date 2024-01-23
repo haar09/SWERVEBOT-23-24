@@ -42,7 +42,7 @@ public class RobotContainer {
       new SwerveJoystickCmd(
         swerveSubsystem,
         () -> -driverJoystick.getRawAxis(0),
-        () -> driverJoystick.getRawAxis(1),
+        () -> -driverJoystick.getRawAxis(1),
         () -> -driverJoystick.getRawAxis(2), 
         () -> !driverJoystick.getRawButton(5), //bu L1
         () -> !driverJoystick.getRawButton(6) // bu R1

@@ -50,9 +50,9 @@ public final class Constants {
     public static final boolean kBRTurningEncoderReversed = false;
 
     public static final boolean kFLDriveEncoderReversed = false;
-    public static final boolean kBLDriveEncoderReversed = false;
+    public static final boolean kBLDriveEncoderReversed = true;
     public static final boolean kFRDriveEncoderReversed = false;
-    public static final boolean kBRDriveEncoderReversed = false;
+    public static final boolean kBRDriveEncoderReversed = true;
 
     public static final int kFLDriveAbsoluteEncoderPort = 51; //saat yönü tersi pozitif
     public static final int kBLDriveAbsoluteEncoderPort = 50; //saat yönü tersi pozitif
@@ -98,7 +98,7 @@ public final class Constants {
   }
 
   public static class OIConstants {
-    public static final double kDeadband = 0.09;
+    public static final double kDeadband = 0.12;
     public static final double kLimeLightMountAngleDegrees = 20;
     public static final double kLimeLightHeightMeters = 0.175;
     public static final double kGoalHeightMeters = 0.54;

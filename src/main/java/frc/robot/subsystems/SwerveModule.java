@@ -12,7 +12,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.PIDConstants;
 import frc.robot.Constants.DriveConstants;
@@ -91,18 +90,17 @@ public class SwerveModule{
     }
 
     public double getAbsolutePosition(){
-        return absoluteEncoder.getPosition().getValueAsDouble() * ModuleConstants.kTurningMotorGearRatio;
+        return (absoluteEncoder.getPosition().getValueAsDouble() * 360);
     }
 
     public double getAbsoluteEncoderRad() {
-		double angle = (absoluteEncoder.getPosition().getValueAsDouble() * ModuleConstants.kTurningEncoderRot2Rad);
+		double angle = Math.toRadians(absoluteEncoder.getPosition().getValueAsDouble() * 360);
         return angle;
     }
 
     public void resetEncoders(){
         driveEncoder.setPosition(0);
-        turningEncoder.setPosition((0 / 360 * ModuleConstants.kTurningEncoderRot2Rad) + getAbsoluteEncoderRad());
-        setDesiredState(new SwerveModuleState(0, new Rotation2d(0)));
+        turningEncoder.setPosition(/*Math.toRadians(90) + */getAbsoluteEncoderRad());
     }
 
     public SwerveModuleState getState(){
