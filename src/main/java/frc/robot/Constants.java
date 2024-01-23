@@ -34,41 +34,40 @@ public final class Constants {
         new Translation2d(-kOnArkaArasi / 2, -kSagSolArasi / 2)
     ); 
 
-    public static final int kFLDriveMotorPort = 1;
-    public static final int kBLDriveMotorPort = 12;
-    public static final int kFRDriveMotorPort = 62;
-    public static final int kBRDriveMotorPort = 14;
+    public static final int kFLDriveMotorPort = 62;
+    public static final int kBLDriveMotorPort = 1;
+    public static final int kFRDriveMotorPort = 14;
+    public static final int kBRDriveMotorPort = 12;
 
-    public static final int kFLTurningMotorPort = 3;
-    public static final int kBLTurningMotorPort = 13;
-    public static final int kFRTurningMotorPort = 2;
-    public static final int kBRTurningMotorPort = 15;
+    public static final int kFLTurningMotorPort = 2;
+    public static final int kBLTurningMotorPort = 3;
+    public static final int kFRTurningMotorPort = 15;
+    public static final int kBRTurningMotorPort = 13;
 
     public static final boolean kFLTurningEncoderReversed = false;
     public static final boolean kBLTurningEncoderReversed = false;
     public static final boolean kFRTurningEncoderReversed = false;
     public static final boolean kBRTurningEncoderReversed = false;
 
-    public static final boolean kFLDriveEncoderReversed = true;
+    public static final boolean kFLDriveEncoderReversed = false;
     public static final boolean kBLDriveEncoderReversed = false;
     public static final boolean kFRDriveEncoderReversed = false;
     public static final boolean kBRDriveEncoderReversed = false;
 
-    public static final int kFLDriveAbsoluteEncoderPort = 51; //saat yönü pozitif
-    public static final int kBLDriveAbsoluteEncoderPort = 50; //saat yönü pozitif
-    public static final int kFRDriveAbsoluteEncoderPort = 52; //saat yönü pozitif
-    public static final int kBRDriveAbsoluteEncoderPort = 53; //saat yönü pozitif
+    public static final int kFLDriveAbsoluteEncoderPort = 51; //saat yönü tersi pozitif
+    public static final int kBLDriveAbsoluteEncoderPort = 50; //saat yönü tersi pozitif
+    public static final int kFRDriveAbsoluteEncoderPort = 52; //saat yönü tersi pozitif
+    public static final int kBRDriveAbsoluteEncoderPort = 53; //saat yönü tersi pozitif
 
     public static final boolean kFLDriveAbsoluteEncoderReversed = true;
     public static final boolean kBLDriveAbsoluteEncoderReversed = true;
     public static final boolean kFRDriveAbsoluteEncoderReversed = true;
     public static final boolean kBRDriveAbsoluteEncoderReversed = true;
 
-    /* CANCODER GELINCE ayarlanacak */
-    public static final double kFLDriveAbsoluteEncoderOffsetDeg = 0;
-    public static final double kBLDriveAbsoluteEncoderOffsetDeg = 0;
-    public static final double kFRDriveAbsoluteEncoderOffsetDeg = 0;
-    public static final double kBRDriveAbsoluteEncoderOffsetDeg = 0;
+    public static final double kFLDriveAbsoluteEncoderOffsetDeg = -0.286;
+    public static final double kBLDriveAbsoluteEncoderOffsetDeg = 0.422;
+    public static final double kFRDriveAbsoluteEncoderOffsetDeg = 0.097;
+    public static final double kBRDriveAbsoluteEncoderOffsetDeg = 0.128;
 
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double kPhysicalMaxSpeedMetersPerSecond = 35;

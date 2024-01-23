@@ -1,6 +1,10 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.core.CoreCANcoder;
+
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
@@ -20,7 +24,7 @@ public class SwerveModule{
 
     private final RelativeEncoder driveEncoder;
     private final RelativeEncoder turningEncoder;
-    private final CoreCANcoder absoluteEncoder;
+    private final CANcoder absoluteEncoder;
 
     private final PIDController turningPidController;
 
@@ -44,9 +48,12 @@ public class SwerveModule{
             driveEncoder = driveMotor.getEncoder();
             turningEncoder = turningMotor.getEncoder();
 
-            absoluteEncoder = new CoreCANcoder(absoluteEncoderId);
-            //absoluteEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-            //absoluteEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
+            absoluteEncoder = new CANcoder(absoluteEncoderId);
+            CANcoderConfiguration config = new CANcoderConfiguration();
+            config.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
+            config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf; //plus minus or unsigned
+            config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+            absoluteEncoder.getConfigurator().apply(config);
 
             driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);
             driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRPM2MeterPerSec);
@@ -84,20 +91,17 @@ public class SwerveModule{
     }
 
     public double getAbsolutePosition(){
-        //return absoluteEncoder.getAbsolutePosition().getValue();
-        return 1;
+        return absoluteEncoder.getAbsolutePosition().getValueAsDouble() * 360;
     }
 
     public double getAbsoluteEncoderRad() {
-		//double angle = Math.toRadians(absoluteEncoder.getAbsolutePosition().getValue());
-		//SmartDashboard.putString(this.driveMotor.getDeviceId() +"Abs. Error", absoluteEncoder.getLastError().toString);
-        return 1;
+		double angle = (absoluteEncoder.getAbsolutePosition().getValueAsDouble() * ModuleConstants.kTurningEncoderRot2Rad);
+        return angle;
     }
 
     public void resetEncoders(){
         driveEncoder.setPosition(0);
-        //absoluteEncoder.getAbsolutePosition();
-        turningEncoder.setPosition(Math.toRadians(90));
+        turningEncoder.setPosition(Math.toRadians(90) + absoluteEncoder.getAbsolutePosition().getValueAsDouble() * ModuleConstants.kTurningEncoderRot2Rad);
     }
 
     public SwerveModuleState getState(){
