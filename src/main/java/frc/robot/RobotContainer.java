@@ -41,9 +41,9 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(
       new SwerveJoystickCmd(
         swerveSubsystem,
-        () -> -driverJoystick.getRawAxis(0),
+        () -> driverJoystick.getRawAxis(0),
         () -> -driverJoystick.getRawAxis(1),
-        () -> -driverJoystick.getRawAxis(2), 
+        () -> driverJoystick.getRawAxis(2), 
         () -> !driverJoystick.getRawButton(5), //bu L1
         () -> !driverJoystick.getRawButton(6) // bu R1
       )
@@ -71,10 +71,9 @@ public class RobotContainer {
     Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
       new Pose2d(0, 0, new Rotation2d(0)),
       List.of(
-        new Translation2d(-1, 0),
-        new Translation2d(0, -1)
+        new Translation2d(-1, 0)
       ),
-      new Pose2d (-1, -1, Rotation2d.fromDegrees(0)),
+      new Pose2d (-1, 0, Rotation2d.fromDegrees(180)),
       trajectoryConfig
     );
 

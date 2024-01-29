@@ -51,7 +51,7 @@ public class SwerveModule{
             CANcoderConfiguration config = new CANcoderConfiguration();
             config.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
             config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf; //plus minus or unsigned
-            config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+            config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
             absoluteEncoder.getConfigurator().apply(config);
 
             driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRot2Meter);

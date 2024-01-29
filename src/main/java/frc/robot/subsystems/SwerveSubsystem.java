@@ -78,25 +78,21 @@ public class SwerveSubsystem extends SubsystemBase{
             public void initSendable(SendableBuilder builder) {
               builder.setSmartDashboardType("SwerveDrive");
           
-              builder.addDoubleProperty("Front Left Angle", () -> Math.toDegrees(FL.getTurningPosition())-90, null);
-              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity(), null);
+              builder.addDoubleProperty("Front Left Angle", () -> Math.toDegrees(FR.getTurningPosition())-90, null);
+              builder.addDoubleProperty("Front Left Velocity", () -> FR.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Front Right Angle", () -> Math.toDegrees(FR.getTurningPosition())-90, null);
-              builder.addDoubleProperty("Front Right Velocity", () -> FR.getDriveVelocity(), null);
+              builder.addDoubleProperty("Front Right Angle", () -> Math.toDegrees(BR.getTurningPosition())-90, null);
+              builder.addDoubleProperty("Front Right Velocity", () -> BR.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Left Angle", () -> Math.toDegrees(BL.getTurningPosition())-90, null);
-              builder.addDoubleProperty("Back Left Velocity", () -> BL.getDriveVelocity(), null);
+              builder.addDoubleProperty("Back Left Angle", () -> Math.toDegrees(FL.getTurningPosition())-90, null);
+              builder.addDoubleProperty("Back Left Velocity", () -> FL.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Right Angle", () -> Math.toDegrees(BR.getTurningPosition())-90, null);
-              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity(), null);
+              builder.addDoubleProperty("Back Right Angle", () -> Math.toDegrees(BL.getTurningPosition())-90, null);
+              builder.addDoubleProperty("Back Right Velocity", () -> BL.getDriveVelocity(), null);
           
               builder.addDoubleProperty("Robot Angle", () -> getHeading(), null);
             }
           });
-        SmartDashboard.putNumber("fl", FL.getAbsolutePosition());
-        SmartDashboard.putNumber("fR", FR.getAbsolutePosition());
-        SmartDashboard.putNumber("bl", BL.getAbsolutePosition());
-        SmartDashboard.putNumber("br", BR.getAbsolutePosition());
     }
 
     public void zeroHeading() {
@@ -151,7 +147,7 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         odometer.update(getRotation2d(), getModulePositions());
-        field.setRobotPose(new Pose2d(-getPose().getY(), getPose().getX(), getPose().getRotation()));
+        field.setRobotPose(new Pose2d(getPose().getY(), getPose().getX(), getPose().getRotation()));
     }
 
     public void switchIdleMode(){

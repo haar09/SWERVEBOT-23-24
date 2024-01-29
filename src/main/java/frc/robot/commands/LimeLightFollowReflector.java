@@ -30,11 +30,10 @@ public class LimeLightFollowReflector extends Command{
 
     @Override
     public void initialize(){
-        m_LimeLight.setLedMode(true);
     }
 
-    PIDController forwardController = new PIDController(2, 0, 0);
-    PIDController leftRighController = new PIDController(0.03, 0, 0);
+    PIDController forwardController = new PIDController(0, 0, 0);
+    PIDController leftRighController = new PIDController(0.015, 0, 0);
     PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, 0.0002);
     ChassisSpeeds chassisSpeeds, chassisSpeeds2;
     SwerveModuleState[] moduleStates;
@@ -42,52 +41,31 @@ public class LimeLightFollowReflector extends Command{
     @Override
     public void execute(){
         NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-        NetworkTableEntry ty = table.getEntry("ty");
-        double targetOffsetAngle_Vertical = ty.getDouble(0.0);
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,0);
         if (m_LimeLight.isTargetValid()) {
         if (mode==0) {
-            /* v1
-            double angleToGoalDegrees = OIConstants.kLimeLightMountAngleDegrees + targetOffsetAngle_Vertical;
-            double angleToGoalRadians = angleToGoalDegrees * (Math.PI / 180.0);
-    
-            double distanceFromLimelightToGoalMeters = ((OIConstants.kGoalHeightMeters - OIConstants.kLimeLightHeightMeters) / Math.tan(angleToGoalRadians)) - 1;
-            if (targetOffsetAngle_Vertical==0) {distanceFromLimelightToGoalMeters = 0;}
-            LimeLightRotateToTarget limeLightRotateToTarget = new LimeLightRotateToTarget(m_LimeLight);
-            limeLightRotateToTarget.execute();
-    
-            double forwardSpeed = forwardController.calculate(0, distanceFromLimelightToGoalMeters);
-
-            double align = GlobalVariables.getInstance().rotateToTargetSpeed/2;
-
-            align = Math.abs(align) > 0.07 ? align : 0;
-
-            chassisSpeeds = new ChassisSpeeds(0, -forwardSpeed, align);
-            */
-            // v2
             Pose2d targetPose = m_LimeLight.getTargetPose();
-
+            SmartDashboard.putNumber("x1", targetPose.getTranslation().getX());
+            SmartDashboard.putNumber("y1", targetPose.getTranslation().getY());
             Pose2d offsetPose = new Pose2d(
-                targetPose.getTranslation().getX() - 0.5 * Math.cos(targetPose.getRotation().getRadians()),
-                targetPose.getTranslation().getY() - 0.5 * Math.sin(targetPose.getRotation().getRadians()), 
+                targetPose.getTranslation().getX(),
+                targetPose.getTranslation().getY(), 
                 targetPose.getRotation()
             );
 
             double forwardSpeed = forwardController.calculate(0, offsetPose.getTranslation().getX());
             double leftRightSpeed = leftRighController.calculate(0, offsetPose.getTranslation().getY());
-            double angle = thetaController.calculate(0, targetPose.getRotation().getDegrees());
+            double angle = thetaController.calculate(0, -targetPose.getRotation().getDegrees());
 
-            chassisSpeeds = new ChassisSpeeds(forwardSpeed, leftRightSpeed, angle);
+            chassisSpeeds = new ChassisSpeeds(leftRightSpeed, forwardSpeed, angle);
 
         } else if (mode==1) {
-            double tx = -table.getEntry("tx").getDouble(0.0);
+            double tx = table.getEntry("tx").getDouble(0.0);
             if (tx!=0){
                 double rightSpeed = leftRighController.calculate(0, tx);
                 chassisSpeeds = new ChassisSpeeds(rightSpeed, 0, 0);
             }
         }
-        } else {
-            chassisSpeeds = new ChassisSpeeds(0, 0, 0);
         }
 
         moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);

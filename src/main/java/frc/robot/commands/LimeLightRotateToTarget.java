@@ -16,12 +16,11 @@ public class LimeLightRotateToTarget extends Command{
     PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, 0.0002);
     @Override
     public void initialize(){
-        m_LimeLight.setLedMode(true);
     }
 
     @Override
     public void execute(){
-        double tx = -m_LimeLight.getTX();
+        double tx = m_LimeLight.getTX();
 
         GlobalVariables.getInstance().rotateToTargetSpeed = thetaController.calculate(0, tx);
     }
