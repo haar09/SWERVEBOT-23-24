@@ -6,7 +6,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 
 public final class Constants {
@@ -82,19 +81,10 @@ public final class Constants {
   }
   
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 2;
-    public static final double kMaxAngularSpeedRadiansPerSecond = DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 2;
-    public static final double kMaxAccelerationMetersPerSecondSquared = 9;
-    public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI / 4;
+    public static final double kMaxSpeedMetersPerSecond = 3;
     /* AYARLA BUNLARI OLM */
-    public static final double kPXController = 4;
-    public static final double kPYController = 5;
-    public static final double kPThetaController = 0.75;
-
-    public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
-            new TrapezoidProfile.Constraints(
-                    kMaxAngularSpeedRadiansPerSecond,
-                    kMaxAngularAccelerationRadiansPerSecondSquared);
+    public static final double kPXYController = 5;
+    public static final double kPThetaController = 0.1;
   }
 
   public static class OIConstants {
