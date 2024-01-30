@@ -4,25 +4,14 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 
-import java.util.List;
-
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.LimeLightFollowReflector;
 import frc.robot.commands.LimeLightLEDToggle;
 import frc.robot.commands.LimeLightRotateToTarget;
@@ -35,6 +24,8 @@ public class RobotContainer {
   private final SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
   private final LimeLight LimeLight = new LimeLight();
   private final Joystick driverJoystick = new Joystick(0);
+    
+  private final SendableChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -50,6 +41,9 @@ public class RobotContainer {
     );
 
     configureBindings();
+
+    autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
+    SmartDashboard.putData("Auto Mode", autoChooser);
   }
 
   private void configureBindings() {
@@ -64,39 +58,6 @@ public class RobotContainer {
   }
 
   public Command getAutonomousCommand() {
-    TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-        AutoConstants.kMaxSpeedMetersPerSecond,
-        AutoConstants.kMaxAccelerationMetersPerSecondSquared).setKinematics(DriveConstants.kDriveKinematics);
-    
-    Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
-      new Pose2d(0, 0, new Rotation2d(0)),
-      List.of(
-        new Translation2d(-1, 0)
-      ),
-      new Pose2d (-1, 0, Rotation2d.fromDegrees(180)),
-      trajectoryConfig
-    );
-
-    PIDController xController = new PIDController(AutoConstants.kPXController, 0, 0);
-    PIDController yController = new PIDController(AutoConstants.kPYController, 0, 0);
-    ProfiledPIDController thetaController = new ProfiledPIDController(AutoConstants.kPThetaController, 0, 0, AutoConstants.kThetaControllerConstraints);
-    thetaController.enableContinuousInput(-Math.PI, Math.PI);
-
-    SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
-      trajectory,
-      swerveSubsystem::getPose,
-      DriveConstants.kDriveKinematics,
-      xController,
-      yController,
-      thetaController,
-      swerveSubsystem::setModuleStates,
-      swerveSubsystem
-    );
-
-    return new SequentialCommandGroup(
-      new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectory.getInitialPose())),
-      swerveControllerCommand,
-      new InstantCommand(() -> swerveSubsystem.stopModules())
-    );
+    return autoChooser.getSelected();
   }
 }

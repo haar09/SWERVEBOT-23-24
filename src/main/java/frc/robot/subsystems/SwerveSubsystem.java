@@ -1,19 +1,26 @@
 package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 
 public class SwerveSubsystem extends SubsystemBase{
@@ -93,6 +100,33 @@ public class SwerveSubsystem extends SubsystemBase{
               builder.addDoubleProperty("Robot Angle", () -> getHeading(), null);
             }
           });
+
+        // Configure AutoBuilder last
+        AutoBuilder.configureHolonomic(
+                this::getPose, // Robot pose supplier
+                this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+                this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
+                new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
+                        new PIDConstants(AutoConstants.kPXYController, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(AutoConstants.kPThetaController, 0.0, 0.0), // Rotation PID constants
+                        AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
+                        0.3996, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new ReplanningConfig() // Default path replanning config. See the API for the options here
+                ),
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent()) {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                this // Reference to this subsystem to set requirements
+        );
     }
 
     public void zeroHeading() {
@@ -114,10 +148,10 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public SwerveModulePosition[] getModulePositions() {
         return new SwerveModulePosition[] {
-            FR.getPosition(),
             FL.getPosition(),
-            BR.getPosition(),
-            BL.getPosition()
+            FR.getPosition(),
+            BL.getPosition(),
+            BR.getPosition()
       };
     }
 
@@ -128,6 +162,14 @@ public class SwerveSubsystem extends SubsystemBase{
         BR.stop();
     }
 
+    public void setChassisSpeeds(ChassisSpeeds speeds) {
+        SwerveModuleState[] desiredStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+        FL.setDesiredState(desiredStates[0]);
+        FR.setDesiredState(desiredStates[1]);
+        BL.setDesiredState(desiredStates[2]);
+        BR.setDesiredState(desiredStates[3]);
+    }
+
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         FL.setDesiredState(desiredStates[0]);
@@ -136,8 +178,21 @@ public class SwerveSubsystem extends SubsystemBase{
         BR.setDesiredState(desiredStates[3]);
     }
 
+    public SwerveModuleState[] getModuleStates() {
+        return new SwerveModuleState[] {
+            FL.getState(),
+            FR.getState(),
+            BL.getState(),
+            BR.getState()
+        };
+    }
+
     public Pose2d getPose() {
         return odometer.getPoseMeters();
+    }
+
+    public ChassisSpeeds getSpeeds() {
+        return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -156,5 +211,4 @@ public class SwerveSubsystem extends SubsystemBase{
         BL.switchIdleMode();
         BR.switchIdleMode();
     }
-
 }
