@@ -13,16 +13,19 @@ public class LimeLightRotateToTarget extends Command{
         addRequirements(m_LimeLight);
     }
 
-    PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, 0.0002);
+    PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, 0.000018);
     @Override
     public void initialize(){
     }
 
     @Override
     public void execute(){
-        double tx = m_LimeLight.getTX();
+        double tx = -m_LimeLight.getTX();
+        while (tx > 0.1){
+        tx = -m_LimeLight.getTX();
 
         GlobalVariables.getInstance().rotateToTargetSpeed = thetaController.calculate(0, tx);
+        }
     }
 
     public void end(boolean interrupted){

@@ -27,14 +27,8 @@ public class SwerveModule{
 
     private final PIDController turningPidController;
 
-    //private final boolean absoluteEncoderReversed;
-    //private final double absoluteEncoderOffsetDeg;
-
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
-        int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed){
-            
-            //this.absoluteEncoderOffsetDeg = absoluteEncoderOffset;
-            //this.absoluteEncoderReversed = absoluteEncoderReversed;
+        int absoluteEncoderId, double absoluteEncoderOffset){
 
             driveMotor = new CANSparkMax(driveMotorId, CANSparkMax.MotorType.kBrushless);
             turningMotor = new CANSparkMax(turningMotorId, CANSparkMax.MotorType.kBrushless);
@@ -100,7 +94,7 @@ public class SwerveModule{
 
     public void resetEncoders(){
         driveEncoder.setPosition(0);
-        turningEncoder.setPosition(/*Math.toRadians(90) + */getAbsoluteEncoderRad());
+        turningEncoder.setPosition(getAbsoluteEncoderRad());
     }
 
     public SwerveModuleState getState(){
@@ -128,5 +122,9 @@ public class SwerveModule{
     public void stop(){
         driveMotor.set(0);
         turningMotor.set(0);
+    }
+
+    public double getAmperage(){
+        return driveMotor.getOutputCurrent();
     }
 }

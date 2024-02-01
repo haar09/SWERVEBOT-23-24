@@ -33,46 +33,41 @@ public final class Constants {
         new Translation2d(-kOnArkaArasi / 2, -kSagSolArasi / 2)
     ); 
 
-    public static final int kFLDriveMotorPort = 1;
-    public static final int kBLDriveMotorPort = 12;
-    public static final int kFRDriveMotorPort = 62;
-    public static final int kBRDriveMotorPort = 14;
+    public static final int kFLDriveMotorPort = 62;
+    public static final int kBLDriveMotorPort = 1;
+    public static final int kFRDriveMotorPort = 14;
+    public static final int kBRDriveMotorPort = 12;
 
-    public static final int kFLTurningMotorPort = 3;
-    public static final int kBLTurningMotorPort = 13;
-    public static final int kFRTurningMotorPort = 2;
-    public static final int kBRTurningMotorPort = 15;
+    public static final int kFLTurningMotorPort = 2;
+    public static final int kBLTurningMotorPort = 3;
+    public static final int kFRTurningMotorPort = 15;
+    public static final int kBRTurningMotorPort = 13;
 
     public static final boolean kFLTurningEncoderReversed = true;
     public static final boolean kBLTurningEncoderReversed = true;
     public static final boolean kFRTurningEncoderReversed = true;
     public static final boolean kBRTurningEncoderReversed = true;
 
-    public static final boolean kFLDriveEncoderReversed = false;
+    public static final boolean kFLDriveEncoderReversed = true;
     public static final boolean kBLDriveEncoderReversed = false;
     public static final boolean kFRDriveEncoderReversed = true;
-    public static final boolean kBRDriveEncoderReversed = true;
+    public static final boolean kBRDriveEncoderReversed = false;
 
-    public static final int kFLDriveAbsoluteEncoderPort = 50;
-    public static final int kBLDriveAbsoluteEncoderPort = 53;
-    public static final int kFRDriveAbsoluteEncoderPort = 51;
-    public static final int kBRDriveAbsoluteEncoderPort = 52;
+    public static final int kFLTurningAbsoluteEncoderPort = 51; 
+    public static final int kBLTurningAbsoluteEncoderPort = 50; 
+    public static final int kFRTurningAbsoluteEncoderPort = 52; 
+    public static final int kBRTurningAbsoluteEncoderPort = 53; 
 
-    public static final boolean kFLDriveAbsoluteEncoderReversed = true; //unused
-    public static final boolean kBLDriveAbsoluteEncoderReversed = true; //unused
-    public static final boolean kFRDriveAbsoluteEncoderReversed = true; //unused
-    public static final boolean kBRDriveAbsoluteEncoderReversed = true; //unused
-
-    public static final double kFLDriveAbsoluteEncoderOffsetDeg = -0.422;
-    public static final double kBLDriveAbsoluteEncoderOffsetDeg = -0.128;
-    public static final double kFRDriveAbsoluteEncoderOffsetDeg = 0.286;
-    public static final double kBRDriveAbsoluteEncoderOffsetDeg = -0.097;
+    public static final double kFLTurningAbsoluteEncoderOffsetDeg = 0.049;
+    public static final double kBLTurningAbsoluteEncoderOffsetDeg = 0.316;
+    public static final double kFRTurningAbsoluteEncoderOffsetDeg = -0.347;
+    public static final double kBRTurningAbsoluteEncoderOffsetDeg = -0.375;
 
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 35;
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 1;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 25;
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4 / 25;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
@@ -82,9 +77,8 @@ public final class Constants {
   
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;
-    /* AYARLA BUNLARI OLM */
-    public static final double kPXYController = 5;
-    public static final double kPThetaController = 0.1;
+    public static final double kPXYController = 3; //AYARLI
+    public static final double kPThetaController = 0.0001; //AYARLI DEĞİL
   }
 
   public static class OIConstants {
@@ -96,7 +90,7 @@ public final class Constants {
 
   public static class PIDConstants{
     public static final double kPTurning = 0.75;
-    public static final double kPLimeLightRotate = 0.005;
+    public static final double kPLimeLightRotate = 0.0005;
   }
 
 } 

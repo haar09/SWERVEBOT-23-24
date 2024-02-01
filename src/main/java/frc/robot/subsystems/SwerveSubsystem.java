@@ -8,15 +8,19 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,9 +34,8 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kFLTurningMotorPort,
         DriveConstants.kFLDriveEncoderReversed,
         DriveConstants.kFLTurningEncoderReversed,
-        DriveConstants.kFLDriveAbsoluteEncoderPort,
-        DriveConstants.kFLDriveAbsoluteEncoderOffsetDeg,
-        DriveConstants.kFLDriveAbsoluteEncoderReversed
+        DriveConstants.kFLTurningAbsoluteEncoderPort,
+        DriveConstants.kFLTurningAbsoluteEncoderOffsetDeg
     );
 
     private final SwerveModule FR = new SwerveModule(
@@ -40,9 +43,8 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kFRTurningMotorPort,
         DriveConstants.kFRDriveEncoderReversed,
         DriveConstants.kFRTurningEncoderReversed,
-        DriveConstants.kFRDriveAbsoluteEncoderPort,
-        DriveConstants.kFRDriveAbsoluteEncoderOffsetDeg,
-        DriveConstants.kFRDriveAbsoluteEncoderReversed
+        DriveConstants.kFRTurningAbsoluteEncoderPort,
+        DriveConstants.kFRTurningAbsoluteEncoderOffsetDeg
     );
 
     private final SwerveModule BL = new SwerveModule(
@@ -50,9 +52,8 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kBLTurningMotorPort,
         DriveConstants.kBLDriveEncoderReversed,
         DriveConstants.kBLTurningEncoderReversed,
-        DriveConstants.kBLDriveAbsoluteEncoderPort,
-        DriveConstants.kBLDriveAbsoluteEncoderOffsetDeg,
-        DriveConstants.kBLDriveAbsoluteEncoderReversed
+        DriveConstants.kBLTurningAbsoluteEncoderPort,
+        DriveConstants.kBLTurningAbsoluteEncoderOffsetDeg
     );
 
     private final SwerveModule BR = new SwerveModule(
@@ -60,14 +61,14 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kBRTurningMotorPort,
         DriveConstants.kBRDriveEncoderReversed,
         DriveConstants.kBRTurningEncoderReversed,
-        DriveConstants.kBRDriveAbsoluteEncoderPort,
-        DriveConstants.kBRDriveAbsoluteEncoderOffsetDeg,
-        DriveConstants.kBRDriveAbsoluteEncoderReversed
+        DriveConstants.kBRTurningAbsoluteEncoderPort,
+        DriveConstants.kBRTurningAbsoluteEncoderOffsetDeg
     );
 
     private AHRS gyro = new AHRS(SPI.Port.kMXP);
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, new Rotation2d(0), getModulePositions());
     private final Field2d field = new Field2d();
+    private GenericEntry resetNavXEntry;
 
     public SwerveSubsystem() {
         new Thread (() -> {
@@ -85,21 +86,26 @@ public class SwerveSubsystem extends SubsystemBase{
             public void initSendable(SendableBuilder builder) {
               builder.setSmartDashboardType("SwerveDrive");
           
-              builder.addDoubleProperty("Front Left Angle", () -> Math.toDegrees(FR.getTurningPosition())-90, null);
-              builder.addDoubleProperty("Front Left Velocity", () -> FR.getDriveVelocity(), null);
+              builder.addDoubleProperty("Front Left Angle", () -> Math.toDegrees(FL.getTurningPosition()), null);
+              builder.addDoubleProperty("Front Left Velocity", () -> FL.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Front Right Angle", () -> Math.toDegrees(BR.getTurningPosition())-90, null);
-              builder.addDoubleProperty("Front Right Velocity", () -> BR.getDriveVelocity(), null);
+              builder.addDoubleProperty("Front Right Angle", () -> Math.toDegrees(FR.getTurningPosition()), null);
+              builder.addDoubleProperty("Front Right Velocity", () -> FR.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Left Angle", () -> Math.toDegrees(FL.getTurningPosition())-90, null);
-              builder.addDoubleProperty("Back Left Velocity", () -> FL.getDriveVelocity(), null);
+              builder.addDoubleProperty("Back Left Angle", () -> Math.toDegrees(BL.getTurningPosition()), null);
+              builder.addDoubleProperty("Back Left Velocity", () -> BL.getDriveVelocity(), null);
           
-              builder.addDoubleProperty("Back Right Angle", () -> Math.toDegrees(BL.getTurningPosition())-90, null);
-              builder.addDoubleProperty("Back Right Velocity", () -> BL.getDriveVelocity(), null);
+              builder.addDoubleProperty("Back Right Angle", () -> Math.toDegrees(BR.getTurningPosition()), null);
+              builder.addDoubleProperty("Back Right Velocity", () -> BR.getDriveVelocity(), null);
           
               builder.addDoubleProperty("Robot Angle", () -> getHeading(), null);
             }
           });
+          
+        resetNavXEntry = Shuffleboard.getTab("TabName")
+        .add("Reset NavX", false)
+        .withWidget(BuiltInWidgets.kToggleButton)
+        .getEntry();
 
         // Configure AutoBuilder last
         AutoBuilder.configureHolonomic(
@@ -109,9 +115,9 @@ public class SwerveSubsystem extends SubsystemBase{
                 this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(AutoConstants.kPXYController, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(AutoConstants.kPThetaController, 0.0, 0.0), // Rotation PID constants
+                        new PIDConstants(AutoConstants.kPThetaController, 0.0, 0), // Rotation PID constants
                         AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
-                        0.3996, // Drive base radius in meters. Distance from robot center to furthest module.
+                        new Translation2d(DriveConstants.kOnArkaArasi / 2, DriveConstants.kSagSolArasi / 2).getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 () -> {
@@ -131,6 +137,7 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public void zeroHeading() {
         gyro.reset();
+        odometer.update(getRotation2d(), getModulePositions());
         FL.resetEncoders();
         FR.resetEncoders();
         BL.resetEncoders();
@@ -139,7 +146,7 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     public double getHeading() {
-        return -Math.IEEEremainder(gyro.getAngle(), 360);
+        return gyro.getAngle() * -1;
     }
 
     public Rotation2d getRotation2d() {
@@ -151,7 +158,7 @@ public class SwerveSubsystem extends SubsystemBase{
             FL.getPosition(),
             FR.getPosition(),
             BL.getPosition(),
-            BR.getPosition()
+            BR.getPosition(),
       };
     }
 
@@ -164,6 +171,7 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public void setChassisSpeeds(ChassisSpeeds speeds) {
         SwerveModuleState[] desiredStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+        //Bİ DENE AMA BÜYÜK İHTİMAL OLMİCAK   SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, AutoConstants.kMaxSpeedMetersPerSecond); 
         FL.setDesiredState(desiredStates[0]);
         FR.setDesiredState(desiredStates[1]);
         BL.setDesiredState(desiredStates[2]);
@@ -202,7 +210,12 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         odometer.update(getRotation2d(), getModulePositions());
-        field.setRobotPose(new Pose2d(getPose().getY(), getPose().getX(), getPose().getRotation()));
+        field.setRobotPose(getPose());
+
+        if (resetNavXEntry.getBoolean(false)) {
+            zeroHeading();
+            resetNavXEntry.setBoolean(false);
+        }
     }
 
     public void switchIdleMode(){
