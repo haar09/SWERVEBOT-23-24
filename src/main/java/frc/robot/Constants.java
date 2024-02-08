@@ -24,8 +24,8 @@ public final class Constants {
 
   public static class DriveConstants {
 
-    public static final double kSagSolArasi = 56.515;
-    public static final double kOnArkaArasi = 56.515;
+    public static final double kSagSolArasi = 0.56515;
+    public static final double kOnArkaArasi = 0.56515;
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kOnArkaArasi / 2, kSagSolArasi / 2),
         new Translation2d(kOnArkaArasi / 2, -kSagSolArasi / 2),
@@ -66,8 +66,8 @@ public final class Constants {
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
 
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 1;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4 / 25;
+    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 2;
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4 ;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
@@ -78,7 +78,7 @@ public final class Constants {
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kPXYController = 3; //AYARLI
-    public static final double kPThetaController = 0.0001; //AYARLI DEĞİL
+    public static final double kPThetaController = 1; //AYARLI
   }
 
   public static class OIConstants {
@@ -89,7 +89,7 @@ public final class Constants {
   }
 
   public static class PIDConstants{
-    public static final double kPTurning = 0.75;
+    public static final double kPTurning = 0.65;
     public static final double kPLimeLightRotate = 0.0005;
   }
 

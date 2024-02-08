@@ -1,23 +1,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PIDConstants;
 import frc.robot.subsystems.LimeLight;
-import frc.robot.subsystems.SwerveSubsystem;
 
-public class LimeLightRotateToTarget extends Command{
+public class RotateToTargetWhileDrive extends Command{
     private final LimeLight m_LimeLight;
-    private final SwerveSubsystem swerveSubsystem;
     private double tx;
     
-    public LimeLightRotateToTarget(LimeLight subsystem, SwerveSubsystem swerveSubsystem){
+    public RotateToTargetWhileDrive(LimeLight subsystem){
         this.m_LimeLight = subsystem;
-        this.swerveSubsystem = swerveSubsystem;
         addRequirements(m_LimeLight);
     }
 
@@ -30,9 +24,7 @@ public class LimeLightRotateToTarget extends Command{
     @Override
     public void execute(){
         tx = -m_LimeLight.getTX();
-        SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, thetaController.calculate(0, tx)));
-
-        swerveSubsystem.setModuleStates(moduleStates);
+        GlobalVariables.getInstance().rotateToTargetSpeed = thetaController.calculate(0, tx);
     }
 
     public void end(boolean interrupted){
@@ -42,6 +34,6 @@ public class LimeLightRotateToTarget extends Command{
 
     @Override
     public boolean isFinished(){
-        return Math.abs(tx) < 2.5;
+        return false;
     }
 }

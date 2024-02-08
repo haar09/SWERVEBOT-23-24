@@ -125,6 +125,6 @@ public class SwerveModule{
     }
 
     public double getAmperage(){
-        return driveMotor.getOutputCurrent();
+        return driveMotor.getAppliedOutput();
     }
 }

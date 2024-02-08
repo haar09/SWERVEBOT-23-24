@@ -115,7 +115,7 @@ public class SwerveSubsystem extends SubsystemBase{
                 this::setChassisSpeeds, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(AutoConstants.kPXYController, 0.0, 0.0), // Translation PID constants
-                        new PIDConstants(AutoConstants.kPThetaController, 0.0, 0), // Rotation PID constants
+                        new PIDConstants(AutoConstants.kPThetaController, 0.0, 0.0), // Rotation PID constants
                         AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
                         new Translation2d(DriveConstants.kOnArkaArasi / 2, DriveConstants.kSagSolArasi / 2).getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -137,7 +137,6 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public void zeroHeading() {
         gyro.reset();
-        odometer.update(getRotation2d(), getModulePositions());
         FL.resetEncoders();
         FR.resetEncoders();
         BL.resetEncoders();
@@ -146,7 +145,7 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     public double getHeading() {
-        return gyro.getAngle() * -1;
+        return gyro.getYaw() * -1;
     }
 
     public Rotation2d getRotation2d() {
@@ -171,7 +170,6 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public void setChassisSpeeds(ChassisSpeeds speeds) {
         SwerveModuleState[] desiredStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
-        //Bİ DENE AMA BÜYÜK İHTİMAL OLMİCAK   SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, AutoConstants.kMaxSpeedMetersPerSecond); 
         FL.setDesiredState(desiredStates[0]);
         FR.setDesiredState(desiredStates[1]);
         BL.setDesiredState(desiredStates[2]);
@@ -204,13 +202,21 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     public void resetOdometry(Pose2d pose) {
+        zeroHeading();
         odometer.resetPosition(getRotation2d(), getModulePositions(), pose);
     }
 
     @Override
     public void periodic() {
         odometer.update(getRotation2d(), getModulePositions());
-        field.setRobotPose(getPose());
+        field.setRobotPose(odometer.getPoseMeters());
+        
+        /*
+        SmartDashboard.putNumber("FL", FL.getAmperage());
+        SmartDashboard.putNumber("FR", FR.getAmperage());
+        SmartDashboard.putNumber("BL", BL.getAmperage());
+        SmartDashboard.putNumber("BR", BR.getAmperage());
+        */
 
         if (resetNavXEntry.getBoolean(false)) {
             zeroHeading();
