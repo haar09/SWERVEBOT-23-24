@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.LimeLightFollowReflector;
 import frc.robot.commands.LimeLightLEDToggle;
 import frc.robot.commands.LimeLightRotateToTarget;
 import frc.robot.commands.RotateToTargetWhileDrive;
@@ -54,8 +55,7 @@ public class RobotContainer {
     new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //ps butonu
     new JoystickButton(driverJoystick, 10).onTrue(new LimeLightLEDToggle(LimeLight)); //options
 
-    //new JoystickButton(driverJoystick, 4).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 0)); // üçgen
-    //new JoystickButton(driverJoystick, 11).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem, 1)); // L3
+    new JoystickButton(driverJoystick, 4).whileTrue(new LimeLightFollowReflector(LimeLight, swerveSubsystem)); // üçgen
     
     new JoystickButton(driverJoystick, 3).whileTrue(new RotateToTargetWhileDrive(LimeLight)); // bu daire
     new JoystickButton(driverJoystick, 1).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare

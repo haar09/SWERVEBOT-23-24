@@ -67,7 +67,7 @@ public final class Constants {
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 2;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 4 ;
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2 ;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
@@ -90,7 +90,7 @@ public final class Constants {
 
   public static class PIDConstants{
     public static final double kPTurning = 0.65;
-    public static final double kPLimeLightRotate = 0.0005;
+    public static final double kPLimeLightRotate = 0.05;
   }
 
 } 

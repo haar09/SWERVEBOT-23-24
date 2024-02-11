@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -47,9 +45,8 @@ public class LimeLight extends SubsystemBase{
         m_targetList.add(ta);
     }
 
-    public Pose2d getTargetPose(){
-        Pose2d pose = new Pose2d(target[0], target[1], new Rotation2d(Math.toRadians(target[5])));
-        return pose;
+    public double[] getTargetPose() {
+        return new double[]{target[0], target[1], tx};
     }
 
     public double getTX() {
