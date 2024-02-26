@@ -2,18 +2,23 @@ package frc.robot.subsystems;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -23,6 +28,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -35,7 +41,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kFLDriveEncoderReversed,
         DriveConstants.kFLTurningEncoderReversed,
         DriveConstants.kFLTurningAbsoluteEncoderPort,
-        DriveConstants.kFLTurningAbsoluteEncoderOffsetDeg
+        DriveConstants.kFLTurningAbsoluteEncoderOffset
     );
 
     private final SwerveModule FR = new SwerveModule(
@@ -44,7 +50,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kFRDriveEncoderReversed,
         DriveConstants.kFRTurningEncoderReversed,
         DriveConstants.kFRTurningAbsoluteEncoderPort,
-        DriveConstants.kFRTurningAbsoluteEncoderOffsetDeg
+        DriveConstants.kFRTurningAbsoluteEncoderOffset
     );
 
     private final SwerveModule BL = new SwerveModule(
@@ -53,7 +59,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kBLDriveEncoderReversed,
         DriveConstants.kBLTurningEncoderReversed,
         DriveConstants.kBLTurningAbsoluteEncoderPort,
-        DriveConstants.kBLTurningAbsoluteEncoderOffsetDeg
+        DriveConstants.kBLTurningAbsoluteEncoderOffset
     );
 
     private final SwerveModule BR = new SwerveModule(
@@ -62,26 +68,33 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kBRDriveEncoderReversed,
         DriveConstants.kBRTurningEncoderReversed,
         DriveConstants.kBRTurningAbsoluteEncoderPort,
-        DriveConstants.kBRTurningAbsoluteEncoderOffsetDeg
+        DriveConstants.kBRTurningAbsoluteEncoderOffset
     );
 
     private AHRS gyro = new AHRS(SPI.Port.kMXP);
-    private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, new Rotation2d(0), getModulePositions());
     private final Field2d field = new Field2d();
     private GenericEntry resetNavXEntry;
+    private final SwerveDrivePoseEstimator poseEstimator;
+    private final LimeLight limelight;
 
-    public SwerveSubsystem() {
+    public SwerveSubsystem(LimeLight m_limeLight) {
         new Thread (() -> {
             while (true) {
                 if (gyro.isConnected()) {
-                    gyro.reset();
-                    break;
+                    try {
+                        Thread.sleep(1000);
+                        gyro.reset();
+                        break;
+                    } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
             }
         }).start();
         SmartDashboard.putData("Field", field);
         SmartDashboard.putData("Gyro", gyro);
-          SmartDashboard.putData("Swerve Drive", new Sendable() {
+        SmartDashboard.putData("Swerve Drive", new Sendable() {
             @Override
             public void initSendable(SendableBuilder builder) {
               builder.setSmartDashboardType("SwerveDrive");
@@ -106,6 +119,20 @@ public class SwerveSubsystem extends SubsystemBase{
         .add("Reset NavX", false)
         .withWidget(BuiltInWidgets.kToggleButton)
         .getEntry();
+
+        //pose estimation
+        var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
+        var visionStdDevs = VecBuilder.fill(1, 1, 1);
+        poseEstimator = new SwerveDrivePoseEstimator(
+                DriveConstants.kDriveKinematics,
+                getRotation2d(),
+                getModulePositions(),
+                new Pose2d(),
+                stateStdDevs,
+                visionStdDevs);
+
+        limelight = m_limeLight;
+
 
         // Configure AutoBuilder last
         AutoBuilder.configureHolonomic(
@@ -137,10 +164,6 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public void zeroHeading() {
         gyro.reset();
-        FL.resetEncoders();
-        FR.resetEncoders();
-        BL.resetEncoders();
-        BR.resetEncoders();
         System.out.println("RESETTED!");
     }
 
@@ -194,7 +217,7 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     public Pose2d getPose() {
-        return odometer.getPoseMeters();
+        return poseEstimator.getEstimatedPosition();
     }
 
     public ChassisSpeeds getSpeeds() {
@@ -203,20 +226,31 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public void resetOdometry(Pose2d pose) {
         zeroHeading();
-        odometer.resetPosition(getRotation2d(), getModulePositions(), pose);
+        poseEstimator.resetPosition(getRotation2d(), getModulePositions(), pose);
     }
 
     @Override
     public void periodic() {
-        odometer.update(getRotation2d(), getModulePositions());
-        field.setRobotPose(odometer.getPoseMeters());
+        var visionEst = limelight.getEstimatedGlobalPose();
+        visionEst.ifPresent(
+                est -> {
+                    var estPose = est.estimatedPose.toPose2d();
+                    // Change our trust in the measurement based on the tags we can see
+                    var estStdDevs = limelight.getEstimationStdDevs(estPose);
+    
+                    addVisionMeasurement(
+                            est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+        });
+
         
-        /*
+        poseEstimator.update(getRotation2d(), getModulePositions());
+        field.setRobotPose(poseEstimator.getEstimatedPosition());
+        
+        
         SmartDashboard.putNumber("FL", FL.getAmperage());
         SmartDashboard.putNumber("FR", FR.getAmperage());
         SmartDashboard.putNumber("BL", BL.getAmperage());
-        SmartDashboard.putNumber("BR", BR.getAmperage());
-        */
+        SmartDashboard.putNumber("BR", BR.getAmperage());        
 
         if (resetNavXEntry.getBoolean(false)) {
             zeroHeading();
@@ -230,4 +264,31 @@ public class SwerveSubsystem extends SubsystemBase{
         BL.switchIdleMode();
         BR.switchIdleMode();
     }
+
+    public void addVisionMeasurement(
+            Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+    }
+
+    public Command goTo(){
+            // Since we are using a holonomic drivetrain, the rotation component of this pose
+            // represents the goal holonomic rotation
+            Pose2d targetPose = new Pose2d(1.9, 7.5, Rotation2d.fromDegrees(90));
+
+            // Create the constraints to use while pathfinding
+            PathConstraints constraints = new PathConstraints(
+                    3.0, 3.0,
+                    Math.toRadians(540), Math.toRadians(720));
+
+            // Since AutoBuilder is configured, we can use it to build pathfinding commands
+            Command pathfindingCommand = AutoBuilder.pathfindToPose(
+                    targetPose,
+                    constraints,
+                    0.0, // Goal end velocity in meters/sec
+                    0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
+            );
+
+            return pathfindingCommand;
+    }
+
 }

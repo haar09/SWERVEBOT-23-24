@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.PIDConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.LimeLight;
 
 public class RotateToTargetWhileDrive extends Command{
@@ -34,6 +35,6 @@ public class RotateToTargetWhileDrive extends Command{
 
     @Override
     public boolean isFinished(){
-        return false;
+        return Math.abs(tx) < VisionConstants.kTXTolerance;
     }
 }

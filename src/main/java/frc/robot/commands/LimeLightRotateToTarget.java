@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.PIDConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.LimeLight;
 import frc.robot.subsystems.SwerveSubsystem;
 
@@ -42,6 +43,6 @@ public class LimeLightRotateToTarget extends Command{
 
     @Override
     public boolean isFinished(){
-        return Math.abs(tx) < 2.5;
+        return Math.abs(tx) < VisionConstants.kTXTolerance;
     }
 }

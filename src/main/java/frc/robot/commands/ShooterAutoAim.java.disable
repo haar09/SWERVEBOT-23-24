@@ -1,0 +1,62 @@
+package frc.robot.commands;
+
+import java.util.function.Supplier;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.GlobalVariables;
+import frc.robot.RobotContainer;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.LimeLight;
+import frc.robot.subsystems.Shooter;
+
+public class ShooterAutoAim extends Command{
+    private final Shooter m_Shooter;
+    private final LimeLight m_LimeLight;
+    private final RotateToTargetWhileDrive m_RotateToTargetWhileDrive;
+    private final Supplier<Double> trigger;
+    
+    public ShooterAutoAim(Shooter shooter, LimeLight limeLight, Supplier<Double> trigger){
+        this.m_Shooter = shooter;
+        this.m_LimeLight = new LimeLight();
+        this.m_RotateToTargetWhileDrive = new RotateToTargetWhileDrive(m_LimeLight);
+        this.trigger = trigger;
+        addRequirements(m_Shooter, m_LimeLight);
+    }
+
+    double vy, airtime, vx, launch_angle;
+
+    @Override
+    public void initialize(){
+        m_RotateToTargetWhileDrive.initialize();
+    }
+
+
+    @Override
+    public void execute(){
+        m_RotateToTargetWhileDrive.execute();
+        if (GlobalVariables.getInstance().extenderFull && m_LimeLight.isTargetValid()){
+            RobotContainer.rumble(0,0,0,0);
+            vy = Math.sqrt(Math.pow(ShooterConstants.kAngleH, 2) + (2.04 /* shooter height */ - m_Shooter.getShooterHeight()) * 2 * 32); //çalışmazsa 32-9.8 yap
+            airtime = (vy - ShooterConstants.kAngleH) / 32; //çalışmazsa 32-9.8 yap
+            vx = m_Shooter.getShooterDistance(m_LimeLight.cameraToTarget().getX()) / airtime;
+            launch_angle = Math.atan2(vy, vx);
+            if (trigger.get() > 0.5){
+                m_Shooter.setDesiredAngle(launch_angle);
+            } else {
+                m_Shooter.setDesiredAngle(0);
+            }
+        } else {
+            RobotContainer.rumble(1,1,1,1);
+        }
+    }
+
+    public void end(boolean interrupted){
+        m_RotateToTargetWhileDrive.end(false);
+        RobotContainer.rumble(0,0,0,0);
+    }
+
+    @Override
+    public boolean isFinished(){
+        return m_RotateToTargetWhileDrive.isFinished();
+    }
+}

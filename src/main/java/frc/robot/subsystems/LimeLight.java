@@ -1,52 +1,109 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import java.util.ArrayList;
+import frc.robot.Constants.VisionConstants;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class LimeLight extends SubsystemBase{
-    private final NetworkTable m_limelightTable;
-    private double tv, tx, ty, ta;
+    private PhotonCamera camera;
+    private PhotonPipelineResult result;
+    private PhotonTrackedTarget target;
+    private final PhotonPoseEstimator photonEstimator;
+    private double tx, ty, ta;
     private ArrayList<Double> m_targetList;
-    private double[] target;
     private final int MAX_ENTRIES = 50;
-    private final NetworkTableEntry m_isTargetValid;
-    private final NetworkTableEntry m_ledEntry;
+    private double lastEstTimestamp = 0;
 
     public LimeLight() {
-        m_limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+        camera = new PhotonCamera("Camera_Module_v1");
+        result = camera.getLatestResult();
+
+        photonEstimator =
+                new PhotonPoseEstimator(
+                        VisionConstants.kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, VisionConstants.kRobotToCam);
+        photonEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+        
+        
         m_targetList = new ArrayList<Double>(MAX_ENTRIES);
 
-        m_isTargetValid = m_limelightTable.getEntry("isTargetValid");
-        m_ledEntry = m_limelightTable.getEntry("ledMode");
-
-        SmartDashboard.putBoolean("Limelight Target", m_isTargetValid.getBoolean(false));
-        Shuffleboard.getTab("stream").addCamera("stream", "Limelight", "http://10.69.89.11:5800/stream.mjpg");
+        SmartDashboard.putBoolean("Limelight Target", result.hasTargets());
+        Shuffleboard.getTab("stream").addCamera("stream", "Limelight", "http://photonvision.local:1182/stream.mjpg");
     }
 
     @Override
     public void periodic(){
-        tv = m_limelightTable.getEntry("tv").getDouble(0);
-        tx = m_limelightTable.getEntry("tx").getDouble(0);
-        ty = m_limelightTable.getEntry("ty").getDouble(0);
-        ta = m_limelightTable.getEntry("ta").getDouble(0);
-        target = m_limelightTable.getEntry("targetpose_cameraspace").getDoubleArray(new double[6]);
+        result = camera.getLatestResult();
+        if (result.hasTargets()) {
+        target = result.getBestTarget();
+        tx = target.getYaw();
+        ty = target.getPitch();
+        ta = target.getArea();
+        m_targetList.add(ta);
+        }
 
-        m_isTargetValid.setBoolean(tv == 1.0);
+        SmartDashboard.putBoolean("Limelight Target", result.hasTargets());
 
         if (m_targetList.size() >= MAX_ENTRIES) {
             m_targetList.remove(0);
         }
-        m_targetList.add(ta);
     }
 
-    public double[] getTargetPose() {
-        return new double[]{target[0], target[1], tx};
+    public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
+        var visionEst = photonEstimator.update();
+        double latestTimestamp = camera.getLatestResult().getTimestampSeconds();
+        boolean newResult = Math.abs(latestTimestamp - lastEstTimestamp) > 1e-5;
+        if (newResult) lastEstTimestamp = latestTimestamp;
+        return visionEst;
+    }
+
+    public Matrix<N3, N1> getEstimationStdDevs(Pose2d estimatedPose) {
+        var estStdDevs = VisionConstants.kSingleTagStdDevs;
+        var targets = result.getTargets();
+        int numTags = 0;
+        double avgDist = 0;
+        for (var tgt : targets) {
+            var tagPose = photonEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+            if (tagPose.isEmpty()) continue;
+            numTags++;
+            avgDist +=
+                    tagPose.get().toPose2d().getTranslation().getDistance(estimatedPose.getTranslation());
+        }
+        if (numTags == 0) return estStdDevs;
+        avgDist /= numTags;
+        // Decrease std devs if multiple targets are visible
+        if (numTags > 1) estStdDevs = VisionConstants.kMultiTagStdDevs;
+        // Increase std devs based on (average) distance
+        if (numTags == 1 && avgDist > 4)
+            estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
+        else estStdDevs = estStdDevs.times(1 + (avgDist * avgDist / 30));
+
+        return estStdDevs;
+    }
+
+    public Transform3d cameraToTarget() {
+        return target.getBestCameraToTarget();
+    }
+
+    public double getTargetID() {
+        return target.getFiducialId();
     }
 
     public double getTX() {
@@ -67,27 +124,6 @@ public class LimeLight extends SubsystemBase{
     }
 
     public boolean isTargetValid() {
-        return (tv == 1.0); 
+        return result.hasTargets(); 
     }
-
-    public boolean getLedMode(){
-        int mode = m_ledEntry.getNumber(0).intValue();
-        if (mode == 3){
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public void setLedMode(boolean mode){
-        int modeInt;
-        if (mode){
-            modeInt = 3;
-        } else {
-            modeInt = 1;
-        }
-        m_ledEntry.setNumber((modeInt));
-        SmartDashboard.putBoolean("Led On/Off", mode);
-    }
-
 }
