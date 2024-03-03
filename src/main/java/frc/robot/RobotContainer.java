@@ -13,20 +13,32 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.IntakeCmd;
 import frc.robot.commands.LimeLightRotateToTarget;
 import frc.robot.commands.RotateToTargetWhileDrive;
+//import frc.robot.commands.ShootAndSetRPM;
 //import frc.robot.commands.ShooterAutoAim;
 import frc.robot.commands.SwerveJoystickCmd;
+import frc.robot.commands.AmpAutoShoot.GoToAmp;
 import frc.robot.subsystems.LimeLight;
 //import frc.robot.subsystems.Shooter;
+//import frc.robot.subsystems.ShooterPivot;
 import frc.robot.subsystems.ColorSensor;
+import frc.robot.subsystems.Extender;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class RobotContainer {
   
   private final SwerveSubsystem swerveSubsystem;
-  /*private final Shooter shooter = new Shooter();*/
-  private final LimeLight LimeLight = new LimeLight();
+  /*private final ShooterPivot shooterPivot = new ShooterPivot();*/
+  private final LimeLight LimeLight;
+  private final LEDSubsystem ledSubsystem;
+  private final Extender extender;
+  private final Intake intake;
+  //private final Shooter shooter;
+
   public static final PS4Controller driverJoystick = new PS4Controller(0);
   public static final PS4Controller operatorJoystick = new PS4Controller(1);
 
@@ -34,10 +46,27 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
-    new ColorSensor();
-    swerveSubsystem = new SwerveSubsystem(LimeLight);
 
+    LimeLight = new LimeLight();
+    swerveSubsystem = new SwerveSubsystem(LimeLight);
+    ledSubsystem = new LEDSubsystem();
+    extender = new Extender();
+    intake = new Intake();
+    new ColorSensor();
+    //shooter = new Shooter(ledSubsystem);
+
+    /*shooter.setDefaultCommand(new ShootAndSetRPM(
+      () -> operatorJoystick.getRawAxis(4),
+      () -> operatorJoystick.getRawButton(4),
+      shooter, extender, ledSubsystem));*/
+
+    intake.setDefaultCommand(new IntakeCmd(        
+      () -> -driverJoystick.getRawAxis(3),
+      () -> -driverJoystick.getRawAxis(4),
+      intake,
+      extender
+    ));
+    
     swerveSubsystem.setDefaultCommand(
       new SwerveJoystickCmd(
         swerveSubsystem,
@@ -59,8 +88,8 @@ public class RobotContainer {
   private void configureBindings() {
     new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //ps butonu
 
-    new JoystickButton(driverJoystick, 4).onTrue(swerveSubsystem.goTo()); // üçgen
-    /*new JoystickButton(operatorJoystick, 2).whileTrue(new ShooterAutoAim(shooter, LimeLight, () -> operatorJoystick.getRawAxis(4))); //R2*/
+    new JoystickButton(driverJoystick, 4).whileTrue(new GoToAmp()); // üçgen
+    /*new JoystickButton(operatorJoystick, 5).whileTrue(new ShooterAutoAim(shooter, LimeLight)); // opeartör L1*/
     
     new JoystickButton(driverJoystick, 3).whileTrue(new RotateToTargetWhileDrive(LimeLight)); // bu daire
     new JoystickButton(driverJoystick, 1).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare

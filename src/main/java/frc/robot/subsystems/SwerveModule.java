@@ -37,7 +37,7 @@ public class SwerveModule{
             driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
             turningMotor.setInverted(turningMotorReversed);
             turningMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-            //turningMotor.setSmartCurrentLimit(30);
+            turningMotor.setSmartCurrentLimit(30);
             
             driveEncoder = driveMotor.getEncoder();
             turningEncoder = turningMotor.getEncoder();

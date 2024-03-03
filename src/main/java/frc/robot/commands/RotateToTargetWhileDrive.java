@@ -24,8 +24,10 @@ public class RotateToTargetWhileDrive extends Command{
 
     @Override
     public void execute(){
+        if (m_LimeLight.getTargetID() != 7 && m_LimeLight.getTargetID()!= 3){
         tx = -m_LimeLight.getTX();
         GlobalVariables.getInstance().rotateToTargetSpeed = thetaController.calculate(0, tx);
+        }
     }
 
     public void end(boolean interrupted){

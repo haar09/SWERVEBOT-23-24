@@ -21,6 +21,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.List;
 
 public class LimeLight extends SubsystemBase{
     private PhotonCamera camera;
@@ -125,5 +126,9 @@ public class LimeLight extends SubsystemBase{
 
     public boolean isTargetValid() {
         return result.hasTargets(); 
+    }
+
+    public List<PhotonTrackedTarget> getTargets() {
+        return result.getTargets();
     }
 }

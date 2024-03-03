@@ -4,10 +4,14 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public final class Constants {
   
@@ -33,8 +38,8 @@ public final class Constants {
 
   public static class DriveConstants {
 
-    public static final double kSagSolArasi = 0.56515;
-    public static final double kOnArkaArasi = 0.56515;
+    public static final double kSagSolArasi = 0.51435;
+    public static final double kOnArkaArasi = 0.36195;
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kOnArkaArasi / 2, kSagSolArasi / 2),
         new Translation2d(kOnArkaArasi / 2, -kSagSolArasi / 2),
@@ -67,10 +72,10 @@ public final class Constants {
     public static final int kFRTurningAbsoluteEncoderPort = 52;
     public static final int kBRTurningAbsoluteEncoderPort = 53; 
 
-    public static final double kFLTurningAbsoluteEncoderOffset = 0.023926;
-    public static final double kBLTurningAbsoluteEncoderOffset = -0.190186;
-    public static final double kFRTurningAbsoluteEncoderOffset = 0.163574;
-    public static final double kBRTurningAbsoluteEncoderOffset = -0.384521;
+    public static final double kFLTurningAbsoluteEncoderOffset = 0.037842;
+    public static final double kBLTurningAbsoluteEncoderOffset = -0.179688;
+    public static final double kFRTurningAbsoluteEncoderOffset = 0.152100;
+    public static final double kBRTurningAbsoluteEncoderOffset = -0.377686;
 
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
@@ -88,6 +93,19 @@ public final class Constants {
     public static final double kMaxSpeedMetersPerSecond = 3;
     public static final double kPXYController = 3;
     public static final double kPThetaController = 2;
+
+    public static final PathConstraints kPathConstraints = new PathConstraints(
+      kMaxSpeedMetersPerSecond, 3.0, Math.toRadians(540), Math.toRadians(720));
+
+    public static Pose2d kAmpPose;
+
+    static {
+        if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+            kAmpPose = new Pose2d(14.6, 7.5, Rotation2d.fromDegrees(90)); //DEĞİŞÇEK
+        } else {
+            kAmpPose = new Pose2d(1.9, 7.5, Rotation2d.fromDegrees(90)); //DEĞİŞÇEK
+        }
+    }
   }
 
   public static class OIConstants {
@@ -110,14 +128,16 @@ public final class Constants {
   }
 
   public static class PIDConstants{
-    public static final double kPTurning = 0.65;
+    public static final double kPTurning = 0.45;
     public static final double kPLimeLightRotate = 0.05;
   }
-/*
+
   public static class ShooterConstants{
+    /*
     public static final double kGearRatio = 1.0 / 96.0814286;
     public static final double kPivotMotorRot2Rad = kGearRatio * 2 * Math.PI;
-    public static final float kMaxShooterAngleRad = (float)Math.toRadians(??);
+    public static final float kMinShooterAngleRad = (float)Math.toRadians(0);
+    public static final float kMaxShooterAngleRad = (float)Math.toRadians(30);
 
     public static final double kPivotToShooterMouthDegrees = ??;
     public static final double kPivotToShooterMouthMeters = ??;
@@ -135,5 +155,28 @@ public final class Constants {
     public static final double kAngleD = 0;
     public static final double kAngleToleranceRad = Math.toRadians(2);
     public static final double kAngleH = 0;
-  }*/
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    public static final int kShooterMotorLeftId = ??; // ELEKTRİKLE AYARLANACAK
+    public static final int kShooterMotorRightId = ??; // ELEKTRİKLE AYARLANACAK    
+  
+    public static final boolean kShooterMotorLeftReversed = false; // TAKILINCA AYARLANACAK
+    public static final boolean kShooterMotorRightReversed = false; // TAKILINCA AYARLANACAK
+    
+    public static final double kShooterMotorRPMtoPercentage = 1.0 / 5676.0;
+
+    public static final double kShooterMotorLeftSpeed = 0.9; //TAKILINCA AYARLANACAK
+    public static final double kShooterMotorRightSpeed = 0.9; //TAKILINCA AYARLANACAK
+    */
+  }
+
+  public static class IntakextenderConstants{
+    public static final int kIntakeMotorId = 8; // ELEKTRİKLE AYARLANACAK
+    public static final boolean kIntakeMotorReversed = false; // TAKILINCA AYARLANACAK
+
+    public static final int kExtenderMotorId = 4; //ELEKTRİKLE AYARLANACAK
+    public static final boolean kExtenderMotorReversed = false; //TAKILINCA AYARLANACAK
+    
+  }
 } 

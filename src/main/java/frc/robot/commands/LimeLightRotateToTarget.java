@@ -30,10 +30,12 @@ public class LimeLightRotateToTarget extends Command{
 
     @Override
     public void execute(){
+        if (m_LimeLight.getTargetID() != 1 && m_LimeLight.getTargetID()!= 3){
         tx = -m_LimeLight.getTX();
         SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(new ChassisSpeeds(0, 0, thetaController.calculate(0, tx)));
 
         swerveSubsystem.setModuleStates(moduleStates);
+        }
     }
 
     public void end(boolean interrupted){

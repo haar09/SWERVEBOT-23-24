@@ -1,101 +1,75 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.GlobalVariables;
 
 public class Shooter extends SubsystemBase{
-    
-    private final CANSparkMax pivotMotor;
 
-    private final RelativeEncoder pivotEncoder;
-    private final CANcoder absoluteEncoder;
+    private final CANSparkMax leftMotor;
+    private final CANSparkMax rightMotor;
 
-    private final PIDController anglePidController;
+    private final RelativeEncoder leftMotorEncoder;
+    private final RelativeEncoder rightMotorEncoder;
 
-    public Shooter() {
-        pivotMotor = new CANSparkMax(ShooterConstants.kPivotMotorId, CANSparkMax.MotorType.kBrushless);
-        absoluteEncoder = new CANcoder(ShooterConstants.kAbsoluteEncoderId);
+    private final LEDSubsystem ledSubsystem;
 
-        pivotMotor.setInverted(ShooterConstants.kPivotMotorReversed);
-        pivotMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    public boolean ledIdle;
 
-        pivotEncoder = pivotMotor.getEncoder();
+    public Shooter(LEDSubsystem m_LedSubsystem) {
+        ledSubsystem = m_LedSubsystem;
 
-        CANcoderConfiguration config = new CANcoderConfiguration();
-        config.MagnetSensor.MagnetOffset = ShooterConstants.kAbsoluteEncoderOffset;
-        config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
-        config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-        absoluteEncoder.getConfigurator().apply(config);
+        leftMotor = new CANSparkMax(ShooterConstants.kShooterMotorLeftId, CANSparkMax.MotorType.kBrushless);
+        rightMotor = new CANSparkMax(ShooterConstants.kShooterMotorRightId, CANSparkMax.MotorType.kBrushless);
 
-        pivotEncoder.setPositionConversionFactor(ShooterConstants.kPivotMotorRot2Rad);
-        pivotMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.kMaxShooterAngleRad);
-        pivotMotor.setSoftLimit(SoftLimitDirection.kReverse, 0);
-        pivotMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-        pivotMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        leftMotor.setInverted(ShooterConstants.kShooterMotorLeftReversed);
+        rightMotor.setInverted(ShooterConstants.kShooterMotorRightReversed);
 
-        pivotMotor.burnFlash();
+        leftMotorEncoder = leftMotor.getEncoder();
+        rightMotorEncoder = rightMotor.getEncoder();
 
-        anglePidController = new PIDController(ShooterConstants.kAngleP, ShooterConstants.kAngleI, ShooterConstants.kAngleD);
-        anglePidController.setTolerance(ShooterConstants.kAngleToleranceRad);
-        anglePidController.enableContinuousInput(-Math.PI, Math.PI);
-        
-        resetEncoders();
+        leftMotorEncoder.setVelocityConversionFactor(ShooterConstants.kShooterMotorRPMtoPercentage);
+        rightMotorEncoder.setVelocityConversionFactor(ShooterConstants.kShooterMotorRPMtoPercentage);
+
+        ledIdle = true;
     }
 
-    public double getAngle(){
-        return pivotEncoder.getPosition();
-    }
-
-    public double getAbsolutePosition(){
-        return (absoluteEncoder.getPosition().getValueAsDouble() * 360);
-    }
-
-    public double getAbsoluteEncoderRad() {
-		double angle = Math.toRadians(absoluteEncoder.getPosition().getValueAsDouble() * 360);
-        return angle;
-    }
-
-    public void resetEncoders(){
-        pivotEncoder.setPosition(getAbsoluteEncoderRad());
-    }
-
-    public void setDesiredAngle(double angle){
-        if (Math.abs(angle) < ShooterConstants.kAngleToleranceRad) {
-            stop();
-            return;
+    public void setShooterSpeed() {
+        leftMotor.set(ShooterConstants.kShooterMotorLeftSpeed);
+        rightMotor.set(ShooterConstants.kShooterMotorRightSpeed);
+        while (leftMotorEncoder.getVelocity() < ShooterConstants.kShooterMotorLeftSpeed && rightMotorEncoder.getVelocity() < ShooterConstants.kShooterMotorRightSpeed) {
+            leftMotor.set(ShooterConstants.kShooterMotorLeftSpeed);
+            rightMotor.set(ShooterConstants.kShooterMotorRightSpeed);
+            
+            ledIdle = false;
+            ledSubsystem.rainbowMode = false;
+            ledSubsystem.setColor(0, 0, 255);
         }
+        ledSubsystem.setColor(0, 255, 0);
+    }
 
-        if (angle > ShooterConstants.kMaxShooterAngleRad) {
-            angle = ShooterConstants.kMaxShooterAngleRad;
-        } else if (angle < 0) {
-            angle = 0;
+    public void stopShooter() {
+        leftMotor.set(0);
+        rightMotor.set(0);
+        ledIdle = true;
+    }
+
+    @Override
+    public void periodic() {
+        if (ledIdle) {
+            if (GlobalVariables.getInstance().extenderFull) {
+                ledSubsystem.rainbowMode = false;
+                ledSubsystem.setColor(222, 49, 0);
+            } else {
+                ledSubsystem.rainbowMode = true;
+            }
+        } else {
+            ledSubsystem.rainbowMode = false;
+            ledSubsystem.setColor(0, 0, 0);
         }
-
-        pivotMotor.set(anglePidController.calculate(getAngle(), angle));
-    }
-    
-    public void stop(){
-        pivotMotor.set(0);
     }
 
-    public double getShooterHeight() {
-        double shooterHeadAngle = Math.toDegrees(getAngle()) - ShooterConstants.kPivotToShooterMouthDegrees;
-        double shooterMouthHeight = Math.sin(shooterHeadAngle) * ShooterConstants.kPivotToShooterMouthMeters;        
-        return shooterMouthHeight + ShooterConstants.kPivotHeightMeters;
-    }
-
-    public double getShooterDistance(double apriltagToLimelight){
-        double shooterHeadAngle = Math.toDegrees(getAngle()) - ShooterConstants.kPivotToShooterMouthDegrees;
-        double shooterMouthBehind = Math.cos(shooterHeadAngle) * ShooterConstants.kPivotToShooterMouthMeters;
-        return ShooterConstants.kPivotToCameraXDistanceMeters - shooterMouthBehind + apriltagToLimelight;
-    }
 }
