@@ -30,7 +30,8 @@ public class GoToAmp extends Command{
                     0.0, // Goal end velocity in meters/sec
                     0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
             );
-            end(false);
+            
+            
     }
 
     @Override

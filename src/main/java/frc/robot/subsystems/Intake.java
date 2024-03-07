@@ -6,12 +6,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakextenderConstants;
 
 public class Intake extends SubsystemBase {
-    private CANSparkMax intakeMotor;
+    private final CANSparkMax intakeMotor;
 
     public Intake() {
         intakeMotor = new CANSparkMax(IntakextenderConstants.kIntakeMotorId, CANSparkMax.MotorType.kBrushless);
         intakeMotor.setInverted(IntakextenderConstants.kIntakeMotorReversed);
-    }
+        
+    }   
 
     public void setOutputPercentage(double percentage) {
         intakeMotor.set(percentage);

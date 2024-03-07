@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDSubsystem extends SubsystemBase {
@@ -30,7 +32,7 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (rainbowMode) {
-            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+           /*for (var i = 0; i < m_ledBuffer.getLength(); i++) {
                 if ((i + cycleCount) % m_ledBuffer.getLength() < 3) {
                     m_ledBuffer.setRGB(i, 255, 0, 0); // Set to red
                 } else {
@@ -38,13 +40,15 @@ public class LEDSubsystem extends SubsystemBase {
                 }
             }
             cycleCount = (cycleCount + 0.2) % m_ledBuffer.getLength();
-            m_led.setData(m_ledBuffer);
+            m_led.setData(m_ledBuffer);*/
+            SmartDashboard.putString("Leds", "#ff0000");
         } else {
-            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+            /*for (var i = 0; i < m_ledBuffer.getLength(); i++) {
                 m_ledBuffer.setRGB(i, currentRGB[0], currentRGB[1], currentRGB[2]);
             }
             // Set the LEDs
-            m_led.setData(m_ledBuffer);
+            m_led.setData(m_ledBuffer);*/
+            SmartDashboard.putString("Leds", new Color(currentRGB[0], currentRGB[1], currentRGB[2]).toHexString());
         }
     }
 

@@ -16,13 +16,15 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.IntakeCmd;
 import frc.robot.commands.LimeLightRotateToTarget;
 import frc.robot.commands.RotateToTargetWhileDrive;
-//import frc.robot.commands.ShootAndSetRPM;
+import frc.robot.commands.ShootAndSetRPM;
 //import frc.robot.commands.ShooterAutoAim;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.AmpAutoShoot.GoToAmp;
+import frc.robot.commands.SetAngle.AmpAngle;
+import frc.robot.commands.SetAngle.ShooterAngle;
 import frc.robot.subsystems.LimeLight;
-//import frc.robot.subsystems.Shooter;
-//import frc.robot.subsystems.ShooterPivot;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.ShooterPivot;
 import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Intake;
@@ -32,12 +34,12 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
   
   private final SwerveSubsystem swerveSubsystem;
-  /*private final ShooterPivot shooterPivot = new ShooterPivot();*/
+  private final ShooterPivot shooterPivot = new ShooterPivot();
   private final LimeLight LimeLight;
   private final LEDSubsystem ledSubsystem;
   private final Extender extender;
   private final Intake intake;
-  //private final Shooter shooter;
+  private final Shooter shooter;
 
   public static final PS4Controller driverJoystick = new PS4Controller(0);
   public static final PS4Controller operatorJoystick = new PS4Controller(1);
@@ -53,16 +55,17 @@ public class RobotContainer {
     extender = new Extender();
     intake = new Intake();
     new ColorSensor();
-    //shooter = new Shooter(ledSubsystem);
+    shooter = new Shooter(ledSubsystem);
 
-    /*shooter.setDefaultCommand(new ShootAndSetRPM(
+    shooter.setDefaultCommand(new ShootAndSetRPM(
       () -> operatorJoystick.getRawAxis(4),
-      () -> operatorJoystick.getRawButton(4),
-      shooter, extender, ledSubsystem));*/
+      () -> operatorJoystick.getRawButton(4), //üçgen
+      shooter, extender, ledSubsystem));
 
     intake.setDefaultCommand(new IntakeCmd(        
-      () -> -driverJoystick.getRawAxis(3),
-      () -> -driverJoystick.getRawAxis(4),
+      () -> driverJoystick.getRawAxis(3),
+      () -> driverJoystick.getRawAxis(4),
+      () -> driverJoystick.getRawButton(14),
       intake,
       extender
     ));
@@ -89,6 +92,10 @@ public class RobotContainer {
     new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //ps butonu
 
     new JoystickButton(driverJoystick, 4).whileTrue(new GoToAmp()); // üçgen
+
+    new JoystickButton(operatorJoystick, 1).whileTrue(new AmpAngle(shooterPivot)); // kare
+    new JoystickButton(operatorJoystick, 2).whileTrue(new ShooterAngle(shooterPivot)); // x
+    
     /*new JoystickButton(operatorJoystick, 5).whileTrue(new ShooterAutoAim(shooter, LimeLight)); // opeartör L1*/
     
     new JoystickButton(driverJoystick, 3).whileTrue(new RotateToTargetWhileDrive(LimeLight)); // bu daire

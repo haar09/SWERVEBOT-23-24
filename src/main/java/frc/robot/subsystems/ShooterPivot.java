@@ -5,7 +5,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -16,7 +15,6 @@ public class ShooterPivot extends SubsystemBase{
     
     private final CANSparkMax pivotMotor;
 
-    private final RelativeEncoder pivotEncoder;
     private final CANcoder absoluteEncoder;
 
     private final PIDController anglePidController;
@@ -28,15 +26,11 @@ public class ShooterPivot extends SubsystemBase{
         pivotMotor.setInverted(ShooterConstants.kPivotMotorReversed);
         pivotMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
-        pivotEncoder = pivotMotor.getEncoder();
-
         CANcoderConfiguration config = new CANcoderConfiguration();
         config.MagnetSensor.MagnetOffset = ShooterConstants.kAbsoluteEncoderOffset;
         config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf;
         config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         absoluteEncoder.getConfigurator().apply(config);
-
-        pivotEncoder.setPositionConversionFactor(ShooterConstants.kPivotMotorRot2Rad);
 
         pivotMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.kMaxShooterAngleRad);
         pivotMotor.setSoftLimit(SoftLimitDirection.kReverse, ShooterConstants.kMinShooterAngleRad);
@@ -50,28 +44,18 @@ public class ShooterPivot extends SubsystemBase{
         anglePidController.enableContinuousInput(-Math.PI, Math.PI);
         
         resetEncoders();
-        resetAngle();
     }
 
     public double getAngle(){
-        return pivotEncoder.getPosition();
+        return absoluteEncoder.getPosition().getValueAsDouble() * ShooterConstants.kGearRatio;
     }
 
     public double getAbsolutePosition(){
         return (absoluteEncoder.getPosition().getValueAsDouble() * 360);
     }
 
-    public double getAbsoluteEncoderRad() {
-		double angle = Math.toRadians(absoluteEncoder.getPosition().getValueAsDouble() * 360);
-        return angle;
-    }
-
     public void resetEncoders(){
-        pivotEncoder.setPosition(getAbsoluteEncoderRad());
-    }
-
-    public void resetAngle(){
-        pivotEncoder.setPosition(ShooterConstants.kMinShooterAngleRad);
+        absoluteEncoder.setPosition(getAbsolutePosition() / 360);
     }
 
     public void setDesiredAngle(double angle){
@@ -93,7 +77,7 @@ public class ShooterPivot extends SubsystemBase{
         pivotMotor.set(0);
     }
 
-    public double getShooterHeight() {
+    /*public double getShooterHeight() {
         double shooterHeadAngle = Math.toDegrees(getAngle()) - ShooterConstants.kPivotToShooterMouthDegrees;
         double shooterMouthHeight = Math.sin(shooterHeadAngle) * ShooterConstants.kPivotToShooterMouthMeters;        
         return shooterMouthHeight + ShooterConstants.kPivotHeightMeters;
@@ -103,5 +87,5 @@ public class ShooterPivot extends SubsystemBase{
         double shooterHeadAngle = Math.toDegrees(getAngle()) - ShooterConstants.kPivotToShooterMouthDegrees;
         double shooterMouthBehind = Math.cos(shooterHeadAngle) * ShooterConstants.kPivotToShooterMouthMeters;
         return ShooterConstants.kPivotToCameraXDistanceMeters - shooterMouthBehind + apriltagToLimelight;
-    }
+    }*/
 }

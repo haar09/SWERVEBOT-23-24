@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
+import frc.robot.Constants.IntakextenderConstants;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Intake;
 
@@ -11,10 +12,12 @@ public class IntakeCmd extends Command{
     private final Intake intake;
     private final Extender extender;
     private final Supplier<Double> take, out;
+    private final Supplier<Boolean> hard;
 
-    public IntakeCmd(Supplier<Double> take, Supplier<Double> out, Intake intake, Extender extender){
+    public IntakeCmd(Supplier<Double> take, Supplier<Double> out, Supplier<Boolean> hard,Intake intake, Extender extender){
         this.take = take;
         this.out = out;
+        this.hard = hard;
         this.intake = intake;
         this.extender = extender;
         addRequirements(intake);
@@ -31,13 +34,33 @@ public class IntakeCmd extends Command{
         double takeSpeed = take.get();
         double outSpeed = out.get();
 
-        if (takeSpeed > 0 || outSpeed > 0) {
-            intake.setOutputPercentage(takeSpeed - outSpeed);
-            if (!GlobalVariables.getInstance().extenderFull || takeSpeed < outSpeed) {
-                extender.setOutputPercentage(takeSpeed - outSpeed);
+        if (takeSpeed > IntakextenderConstants.kIntakeDeadband) {
+            if (hard.get()) {
+                intake.setOutputPercentage(0.8);
+            } else {
+                intake.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
             }
-        } else {
+            if (!GlobalVariables.getInstance().extenderFull) {
+                if (hard.get()) {
+                    extender.setOutputPercentage(0.8);
+                } else {
+                    extender.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
+                }
+            }
+
+        } else if (outSpeed > IntakextenderConstants.kIntakeDeadband) {
+            if (hard.get()) {
+                intake.setOutputPercentage(-0.8);
+                extender.setOutputPercentage(-0.8);
+            } else {
+                intake.setOutputPercentage(-IntakextenderConstants.kIntakeMotorSpeed);
+                extender.setOutputPercentage(-IntakextenderConstants.kIntakeMotorSpeed);
+            }
+
+        }
+         else {
             intake.setOutputPercentage(0);
+            extender.setOutputPercentage(0);
         }
     }
 

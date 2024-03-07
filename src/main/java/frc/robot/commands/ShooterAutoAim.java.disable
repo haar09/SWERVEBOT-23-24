@@ -18,7 +18,7 @@ public class ShooterAutoAim extends Command {
 
     public ShooterAutoAim(ShooterPivot shooter, LimeLight limeLight) {
         this.m_ShooterPivot = shooter;
-        this.m_LimeLight = new LimeLight();
+        this.m_LimeLight = limeLight;
         this.m_RotateToTargetWhileDrive = new RotateToTargetWhileDrive(m_LimeLight);
         addRequirements(m_ShooterPivot, m_LimeLight);
     }
@@ -63,6 +63,6 @@ public class ShooterAutoAim extends Command {
 
     @Override
     public boolean isFinished() {
-        return m_RotateToTargetWhileDrive.isFinished();
+        return false;
     }
 }

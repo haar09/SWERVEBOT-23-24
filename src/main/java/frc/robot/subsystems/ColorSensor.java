@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.GlobalVariables;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 
@@ -11,9 +12,9 @@ import com.revrobotics.ColorSensorV3;
 public class ColorSensor extends SubsystemBase{
   private final I2C.Port i2cPort = I2C.Port.kOnboard;
   private final ColorSensorV3 m_colorSensor;
-  public int proximity;
+  public int red;
   private ArrayList<Boolean> m_targetList;
-  private final int MAX_ENTRIES = 75;
+  private final int MAX_ENTRIES = 60;
   
   public ColorSensor() {
     m_colorSensor = new ColorSensorV3(i2cPort);
@@ -23,7 +24,15 @@ public class ColorSensor extends SubsystemBase{
 
   @Override
   public void periodic() {
-    proximity = m_colorSensor.getProximity();
+    red = m_colorSensor.getRed();
+    SmartDashboard.putNumber("Proximity", m_colorSensor.getProximity());
+
+
+    SmartDashboard.putNumber("Red", m_colorSensor.getRed());
+    SmartDashboard.putNumber("Green", m_colorSensor.getGreen());
+    SmartDashboard.putNumber("Blue", m_colorSensor.getBlue());
+
+    SmartDashboard.putString("Detected Color", m_colorSensor.getColor().toHexString());
 
     m_targetList.add(getSensor());
     
@@ -35,7 +44,7 @@ public class ColorSensor extends SubsystemBase{
   }
 
   public boolean getSensor() {
-    if (proximity > 250) {
+    if (red > 228) {
       return true;
     } else {
       return false;

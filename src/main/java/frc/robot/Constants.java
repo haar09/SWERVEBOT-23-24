@@ -113,7 +113,7 @@ public final class Constants {
   }
 
   public static class VisionConstants {
-    public static final double kLimeLightMountAngleRadians = Math.toRadians(-20); //DEĞİŞÇEK
+    public static final double kLimeLightMountAngleRadians = Math.toRadians(-25);
     public static final double kLimeLightHeightMeters = 0.17; //DEĞİŞÇEK
 
     public static final Transform3d kRobotToCam =
@@ -133,21 +133,21 @@ public final class Constants {
   }
 
   public static class ShooterConstants{
-    /*
-    public static final double kGearRatio = 1.0 / 96.0814286;
+    
+    public static final double kGearRatio = 1.0 / 11.357; // DEĞİŞÇEK CANCODERIN GEAR RATIO GELCEK
     public static final double kPivotMotorRot2Rad = kGearRatio * 2 * Math.PI;
     public static final float kMinShooterAngleRad = (float)Math.toRadians(0);
     public static final float kMaxShooterAngleRad = (float)Math.toRadians(30);
 
-    public static final double kPivotToShooterMouthDegrees = ??;
-    public static final double kPivotToShooterMouthMeters = ??;
-    public static final double kPivotHeightMeters = ??;
-    public static final double kPivotToCameraXDistanceMeters = ??;
+    /*public static final double kPivotToShooterMouthDegrees = 28;
+    public static final double kPivotToShooterMouthMeters = 0.1745;
+    public static final double kPivotHeightMeters = 0.361;
+    public static final double kPivotToCameraXDistanceMeters = ??;*/
 
-    public static final int kPivotMotorId = ??; // ELEKTRİKLE AYARLANACAK
-    public static final int kAbsoluteEncoderId = ??; // ELEKTRİKLE AYARLANACAK
+    public static final int kPivotMotorId = 11;
+    public static final int kAbsoluteEncoderId = 54;
 
-    public static final double kAbsoluteEncoderOffset = ??; // TAKILINCA AYARLANACAK
+    public static final double kAbsoluteEncoderOffset = 0; // TAKILINCA AYARLANACAK
     public static final boolean kPivotMotorReversed = false; // TAKILINCA AYARLANACAK
 
     public static final double kAngleP = 0;
@@ -157,26 +157,32 @@ public final class Constants {
     public static final double kAngleH = 0;
 
     ////////////////////////////////////////////////////////////////////////////////
-
-    public static final int kShooterMotorLeftId = ??; // ELEKTRİKLE AYARLANACAK
-    public static final int kShooterMotorRightId = ??; // ELEKTRİKLE AYARLANACAK    
-  
-    public static final boolean kShooterMotorLeftReversed = false; // TAKILINCA AYARLANACAK
-    public static final boolean kShooterMotorRightReversed = false; // TAKILINCA AYARLANACAK
     
-    public static final double kShooterMotorRPMtoPercentage = 1.0 / 5676.0;
+    
+    public static final int kShooterMotorLeftId = 5;
+    public static final int kShooterMotorRightId = 9;    
+  
+    public static final boolean kShooterMotorLeftReversed = false;
+    public static final boolean kShooterMotorRightReversed = true; 
+  
+    public static final double kShooterMotorLeftSpeed = 0.8;
+    public static final double kShooterMotorRightSpeed = 0.8;
 
-    public static final double kShooterMotorLeftSpeed = 0.9; //TAKILINCA AYARLANACAK
-    public static final double kShooterMotorRightSpeed = 0.9; //TAKILINCA AYARLANACAK
-    */
+    /*public static final double kShooterMotorP = 0;
+    public static final double kShooterMotorI = 0;
+    public static final double kShooterMotorD = 0;
+    public static final double kShooterMotorIzone = 0;
+    public static final double kShooterMotorFF = 0;*/
   }
 
   public static class IntakextenderConstants{
-    public static final int kIntakeMotorId = 8; // ELEKTRİKLE AYARLANACAK
-    public static final boolean kIntakeMotorReversed = false; // TAKILINCA AYARLANACAK
+    public static final int kIntakeMotorId = 8;
+    public static final boolean kIntakeMotorReversed = false;
+    public static final double kIntakeMotorSpeed = 0.4;
+    public static final double kIntakeDeadband = 0.3;
 
-    public static final int kExtenderMotorId = 4; //ELEKTRİKLE AYARLANACAK
-    public static final boolean kExtenderMotorReversed = false; //TAKILINCA AYARLANACAK
-    
+
+    public static final int kExtenderMotorId = 6;
+    public static final boolean kExtenderMotorReversed = false;
   }
 } 
