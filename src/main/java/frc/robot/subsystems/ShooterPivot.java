@@ -8,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
@@ -34,8 +35,8 @@ public class ShooterPivot extends SubsystemBase{
 
         pivotMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.kMaxShooterAngleRad);
         pivotMotor.setSoftLimit(SoftLimitDirection.kReverse, ShooterConstants.kMinShooterAngleRad);
-        pivotMotor.enableSoftLimit(SoftLimitDirection.kForward, true);
-        pivotMotor.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        pivotMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
+        pivotMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
 
         pivotMotor.burnFlash();
 
@@ -43,11 +44,16 @@ public class ShooterPivot extends SubsystemBase{
         anglePidController.setTolerance(ShooterConstants.kAngleToleranceRad);
         anglePidController.enableContinuousInput(-Math.PI, Math.PI);
         
-        resetEncoders();
+        //resetEncoders();
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Shooter Angle", Math.toDegrees(getAngle()));
     }
 
     public double getAngle(){
-        return absoluteEncoder.getPosition().getValueAsDouble() * ShooterConstants.kGearRatio;
+        return absoluteEncoder.getPosition().getValueAsDouble() * ShooterConstants.kPivotMotorRot2Rad;
     }
 
     public double getAbsolutePosition(){

@@ -62,6 +62,9 @@ public class IntakeCmd extends Command{
             intake.setOutputPercentage(0);
             extender.setOutputPercentage(0);
         }
+        if (GlobalVariables.getInstance().extenderFull && outSpeed < IntakextenderConstants.kIntakeDeadband) {
+            extender.setOutputPercentage(0);
+        }
     }
 
     @Override

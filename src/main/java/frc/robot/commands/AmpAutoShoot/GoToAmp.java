@@ -6,10 +6,14 @@ import com.pathplanner.lib.path.PathConstraints;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.ShooterPivot;
 
 public class GoToAmp extends Command{
+    private final ShooterPivot m_ShooterPivot;
 
-    public GoToAmp(){
+    public GoToAmp(ShooterPivot shooter){
+        this.m_ShooterPivot = shooter;
     }
 
     @Override
@@ -31,7 +35,7 @@ public class GoToAmp extends Command{
                     0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
             );
             
-            
+            m_ShooterPivot.setDesiredAngle(ShooterConstants.kMaxShooterAngleRad);
     }
 
     @Override

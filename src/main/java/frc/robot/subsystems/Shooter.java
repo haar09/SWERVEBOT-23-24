@@ -45,10 +45,13 @@ public class Shooter extends SubsystemBase{
         leftMotor.setInverted(ShooterConstants.kShooterMotorLeftReversed);
         rightMotor.setInverted(ShooterConstants.kShooterMotorRightReversed);
 
+        leftMotor.burnFlash();
+        rightMotor.burnFlash();
+
         ledIdle = true;
     }
 
-    public void setShooterSpeed() {
+    public void setSpeakerSpeed() {
         /*while (leftMotor.getAppliedOutput() < ShooterConstants.kShooterMotorLeftSpeed-0.07 && rightMotor.getAppliedOutput() < ShooterConstants.kShooterMotorRightSpeed-0.07) {
             leftPidController.setReference(ShooterConstants.kShooterMotorLeftSpeed, CANSparkMax.ControlType.kVelocity);
             rightPidController.setReference(ShooterConstants.kShooterMotorRightSpeed, CANSparkMax.ControlType.kVelocity);
@@ -56,11 +59,31 @@ public class Shooter extends SubsystemBase{
             ledSubsystem.rainbowMode = false;
             ledSubsystem.setColor(0, 0, 255);
         }*/
-        leftMotor.set(ShooterConstants.kShooterMotorLeftSpeed);
-        rightMotor.set(ShooterConstants.kShooterMotorRightSpeed);
-        while (leftMotor.getAppliedOutput() < ShooterConstants.kShooterMotorLeftSpeed-0.07 && rightMotor.getAppliedOutput() < ShooterConstants.kShooterMotorRightSpeed-0.07) {
-            leftMotor.set(ShooterConstants.kShooterMotorLeftSpeed);
-            rightMotor.set(ShooterConstants.kShooterMotorRightSpeed);
+        leftMotor.set(ShooterConstants.kSpeakerSpeedLeft);
+        rightMotor.set(ShooterConstants.kSpeakerSpeedRight);
+        while (leftMotor.getAppliedOutput() < ShooterConstants.kSpeakerSpeedLeft-0.05 && rightMotor.getAppliedOutput() < ShooterConstants.kSpeakerSpeedRight-0.05) {
+            leftMotor.set(ShooterConstants.kSpeakerSpeedLeft);
+            rightMotor.set(ShooterConstants.kSpeakerSpeedRight);
+            ledIdle = false;
+            ledSubsystem.rainbowMode = false;
+            ledSubsystem.setColor(0, 0, 255);
+        }
+        ledSubsystem.setColor(0, 255, 0);
+    }
+
+    public void setAmpSpeed() {
+        /*while (leftMotor.getAppliedOutput() < ShooterConstants.kShooterMotorLeftSpeed-0.07 && rightMotor.getAppliedOutput() < ShooterConstants.kShooterMotorRightSpeed-0.07) {
+            leftPidController.setReference(ShooterConstants.kShooterMotorLeftSpeed, CANSparkMax.ControlType.kVelocity);
+            rightPidController.setReference(ShooterConstants.kShooterMotorRightSpeed, CANSparkMax.ControlType.kVelocity);
+            ledIdle = false;
+            ledSubsystem.rainbowMode = false;
+            ledSubsystem.setColor(0, 0, 255);
+        }*/
+        leftMotor.set(ShooterConstants.kAmpSpeedLeft);
+        rightMotor.set(ShooterConstants.kAmpSpeedRight);
+        while (leftMotor.getAppliedOutput() < ShooterConstants.kAmpSpeedLeft-0.05 && rightMotor.getAppliedOutput() < ShooterConstants.kAmpSpeedRight-0.05) {
+            leftMotor.set(ShooterConstants.kAmpSpeedLeft);
+            rightMotor.set(ShooterConstants.kAmpSpeedRight);
             ledIdle = false;
             ledSubsystem.rainbowMode = false;
             ledSubsystem.setColor(0, 0, 255);

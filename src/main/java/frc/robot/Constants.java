@@ -72,7 +72,7 @@ public final class Constants {
     public static final int kFRTurningAbsoluteEncoderPort = 52;
     public static final int kBRTurningAbsoluteEncoderPort = 53; 
 
-    public static final double kFLTurningAbsoluteEncoderOffset = 0.037842;
+    public static final double kFLTurningAbsoluteEncoderOffset = 0.046387;
     public static final double kBLTurningAbsoluteEncoderOffset = -0.179688;
     public static final double kFRTurningAbsoluteEncoderOffset = 0.152100;
     public static final double kBRTurningAbsoluteEncoderOffset = -0.377686;
@@ -101,9 +101,9 @@ public final class Constants {
 
     static {
         if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-            kAmpPose = new Pose2d(14.6, 7.5, Rotation2d.fromDegrees(90)); //DEĞİŞÇEK
+            kAmpPose = new Pose2d(14.6, 7.8, Rotation2d.fromDegrees(90));
         } else {
-            kAmpPose = new Pose2d(1.9, 7.5, Rotation2d.fromDegrees(90)); //DEĞİŞÇEK
+            kAmpPose = new Pose2d(1.9, 7.8, Rotation2d.fromDegrees(90));
         }
     }
   }
@@ -114,7 +114,7 @@ public final class Constants {
 
   public static class VisionConstants {
     public static final double kLimeLightMountAngleRadians = Math.toRadians(-25);
-    public static final double kLimeLightHeightMeters = 0.17; //DEĞİŞÇEK
+    public static final double kLimeLightHeightMeters = 0.27;
 
     public static final Transform3d kRobotToCam =
                 new Transform3d(new Translation3d(0.34, 0.0, kLimeLightHeightMeters), new Rotation3d(0, kLimeLightMountAngleRadians, 0));
@@ -134,10 +134,10 @@ public final class Constants {
 
   public static class ShooterConstants{
     
-    public static final double kGearRatio = 1.0 / 11.357; // DEĞİŞÇEK CANCODERIN GEAR RATIO GELCEK
+    public static final double kGearRatio = 1.0 / 11.357; // CANCODERIN GEAR RATIO
     public static final double kPivotMotorRot2Rad = kGearRatio * 2 * Math.PI;
     public static final float kMinShooterAngleRad = (float)Math.toRadians(0);
-    public static final float kMaxShooterAngleRad = (float)Math.toRadians(30);
+    public static final float kMaxShooterAngleRad = (float)Math.toRadians(37);
 
     /*public static final double kPivotToShooterMouthDegrees = 28;
     public static final double kPivotToShooterMouthMeters = 0.1745;
@@ -147,10 +147,10 @@ public final class Constants {
     public static final int kPivotMotorId = 11;
     public static final int kAbsoluteEncoderId = 54;
 
-    public static final double kAbsoluteEncoderOffset = 0; // TAKILINCA AYARLANACAK
-    public static final boolean kPivotMotorReversed = false; // TAKILINCA AYARLANACAK
+    public static final double kAbsoluteEncoderOffset = 0.036377; // TAKILINCA AYARLANACAK
+    public static final boolean kPivotMotorReversed = true; // TAKILINCA AYARLANACAK
 
-    public static final double kAngleP = 0;
+    public static final double kAngleP = 1;
     public static final double kAngleI = 0;
     public static final double kAngleD = 0;
     public static final double kAngleToleranceRad = Math.toRadians(2);
@@ -165,8 +165,11 @@ public final class Constants {
     public static final boolean kShooterMotorLeftReversed = false;
     public static final boolean kShooterMotorRightReversed = true; 
   
-    public static final double kShooterMotorLeftSpeed = 0.8;
-    public static final double kShooterMotorRightSpeed = 0.8;
+    public static final double kSpeakerSpeedLeft = 0.8;
+    public static final double kSpeakerSpeedRight = 0.7;
+
+    public static final double kAmpSpeedLeft = 0.5;
+    public static final double kAmpSpeedRight = 0.5;
 
     /*public static final double kShooterMotorP = 0;
     public static final double kShooterMotorI = 0;

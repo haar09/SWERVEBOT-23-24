@@ -18,7 +18,7 @@ public class ShooterAngle extends Command{
 
     @Override
     public void execute() {
-        m_ShooterPivot.setDesiredAngle(Math.toRadians(15));
+        m_ShooterPivot.setDesiredAngle(Math.toRadians(30)); //subwoofer dibi
     }
 
     public void end(boolean interrupted) {
