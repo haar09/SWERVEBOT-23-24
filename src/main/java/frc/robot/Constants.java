@@ -62,8 +62,8 @@ public final class Constants {
     public static final boolean kFRTurningEncoderReversed = true;
     public static final boolean kBRTurningEncoderReversed = true;
 
-    public static final boolean kFLDriveEncoderReversed = true;
-    public static final boolean kBLDriveEncoderReversed = true;
+    public static final boolean kFLDriveEncoderReversed = false;
+    public static final boolean kBLDriveEncoderReversed = false;
     public static final boolean kFRDriveEncoderReversed = false;
     public static final boolean kBRDriveEncoderReversed = false;
 
@@ -72,16 +72,16 @@ public final class Constants {
     public static final int kFRTurningAbsoluteEncoderPort = 52;
     public static final int kBRTurningAbsoluteEncoderPort = 53; 
 
-    public static final double kFLTurningAbsoluteEncoderOffset = 0.046387;
-    public static final double kBLTurningAbsoluteEncoderOffset = -0.179688;
-    public static final double kFRTurningAbsoluteEncoderOffset = 0.152100;
-    public static final double kBRTurningAbsoluteEncoderOffset = -0.377686;
+    public static final double kFLTurningAbsoluteEncoderOffset = -0.456299;
+    public static final double kBLTurningAbsoluteEncoderOffset = 0.321533;
+    public static final double kFRTurningAbsoluteEncoderOffset = 0.154053;
+    public static final double kBRTurningAbsoluteEncoderOffset = -0.376953;
 
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
 
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 2;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2 ;
+    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 1.25;
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2 / 2;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
@@ -91,7 +91,7 @@ public final class Constants {
   
   public static final class AutoConstants {
     public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kPXYController = 3;
+    public static final double kPXYController = 3.5;
     public static final double kPThetaController = 2;
 
     public static final PathConstraints kPathConstraints = new PathConstraints(
@@ -147,8 +147,8 @@ public final class Constants {
     public static final int kPivotMotorId = 11;
     public static final int kAbsoluteEncoderId = 54;
 
-    public static final double kAbsoluteEncoderOffset = 0.036377; // TAKILINCA AYARLANACAK
-    public static final boolean kPivotMotorReversed = true; // TAKILINCA AYARLANACAK
+    public static final double kAbsoluteEncoderOffset = 0.048096;
+    public static final boolean kPivotMotorReversed = true;
 
     public static final double kAngleP = 1;
     public static final double kAngleI = 0;
@@ -168,8 +168,8 @@ public final class Constants {
     public static final double kSpeakerSpeedLeft = 0.8;
     public static final double kSpeakerSpeedRight = 0.7;
 
-    public static final double kAmpSpeedLeft = 0.5;
-    public static final double kAmpSpeedRight = 0.5;
+    public static final double kAmpSpeedLeft = 0.58;
+    public static final double kAmpSpeedRight = 0.48;
 
     /*public static final double kShooterMotorP = 0;
     public static final double kShooterMotorI = 0;

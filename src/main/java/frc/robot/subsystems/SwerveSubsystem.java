@@ -242,13 +242,7 @@ public class SwerveSubsystem extends SubsystemBase{
 
         
         poseEstimator.update(getRotation2d(), getModulePositions());
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
-        
-        
-        SmartDashboard.putNumber("FL", FL.getAmperage());
-        SmartDashboard.putNumber("FR", FR.getAmperage());
-        SmartDashboard.putNumber("BL", BL.getAmperage());
-        SmartDashboard.putNumber("BR", BR.getAmperage());        
+        field.setRobotPose(poseEstimator.getEstimatedPosition());     
 
         if (resetNavXEntry.getBoolean(false)) {
             zeroHeading();

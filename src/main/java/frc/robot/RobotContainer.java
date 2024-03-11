@@ -15,12 +15,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.AmpShoot;
 import frc.robot.commands.IntakeCmd;
-import frc.robot.commands.RotateToTargetWhileDrive;
+//import frc.robot.commands.RotateToTargetWhileDrive;
 import frc.robot.commands.ShooterShoot;
 //import frc.robot.commands.ShooterAutoAim;
 import frc.robot.commands.SwerveJoystickCmd;
-import frc.robot.commands.AmpAutoShoot.GoToAmp;
-import frc.robot.commands.AutoCommands.LimeLightRotateToTarget;
+//import frc.robot.commands.AmpAutoShoot.GoToAmp;
+import frc.robot.commands.AutoCommands.IntakeIn;
+//import frc.robot.commands.AutoCommands.LimeLightRotateToTarget;
 import frc.robot.commands.AutoCommands.SpeakerShoot;
 import frc.robot.commands.SetAngle.AmpAngle;
 import frc.robot.commands.SetAngle.ShooterAngle;
@@ -63,8 +64,8 @@ public class RobotContainer {
     shooter = new Shooter(ledSubsystem);
 
     intake.setDefaultCommand(new IntakeCmd(        
-      () -> driverJoystick.getRawAxis(4),
-      () -> driverJoystick.getRawAxis(3),
+      () -> driverJoystick.getRawButton(8),
+      () -> driverJoystick.getRawButton(7),
       () -> driverJoystick.getRawButton(2),
       intake,
       extender
@@ -81,8 +82,11 @@ public class RobotContainer {
       )
     );
     
-    NamedCommands.registerCommand("RotateToShooter", new LimeLightRotateToTarget(LimeLight, swerveSubsystem));
-    NamedCommands.registerCommand("ShootToSpeaker", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem));
+    //NamedCommands.registerCommand("RotateToShooter", new LimeLightRotateToTarget(LimeLight, swerveSubsystem));
+    NamedCommands.registerCommand("ShootToSpeaker", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem, 30));
+    NamedCommands.registerCommand("ShootToSpeaker1Meter", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem, 20));
+    NamedCommands.registerCommand("ShootToSpeaker1HalfMeter", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem, 15));
+    NamedCommands.registerCommand("IntakeIn", new IntakeIn(intake, extender));
     configureBindings();
 
     autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
@@ -92,7 +96,7 @@ public class RobotContainer {
   private void configureBindings() {
     new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //ps butonu
 
-    new JoystickButton(driverJoystick, 4).whileTrue(new GoToAmp(shooterPivot)); // üçgen
+    //new JoystickButton(driverJoystick, 4).whileTrue(new GoToAmp(shooterPivot)); // üçgen
 
     new JoystickButton(operatorJoystick, 6).whileTrue(new ShooterShoot(
       () -> operatorJoystick.getRawAxis(4),
@@ -112,7 +116,7 @@ public class RobotContainer {
 
     /*new JoystickButton(operatorJoystick, 5).whileTrue(new ShooterAutoAim(shooter, LimeLight)); // opeartör L1*/
     
-    new JoystickButton(driverJoystick, 3).whileTrue(new RotateToTargetWhileDrive(LimeLight)); // bu daire
+    //new JoystickButton(driverJoystick, 3).whileTrue(new RotateToTargetWhileDrive(LimeLight)); // bu daire
     new JoystickButton(driverJoystick, 1).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare
   }
 

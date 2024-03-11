@@ -11,10 +11,9 @@ import frc.robot.subsystems.Intake;
 public class IntakeCmd extends Command{
     private final Intake intake;
     private final Extender extender;
-    private final Supplier<Double> take, out;
-    private final Supplier<Boolean> hard;
+    private final Supplier<Boolean> take, out, hard;
 
-    public IntakeCmd(Supplier<Double> take, Supplier<Double> out, Supplier<Boolean> hard,Intake intake, Extender extender){
+    public IntakeCmd(Supplier<Boolean> take, Supplier<Boolean> out, Supplier<Boolean> hard,Intake intake, Extender extender){
         this.take = take;
         this.out = out;
         this.hard = hard;
@@ -31,24 +30,21 @@ public class IntakeCmd extends Command{
     @Override
     public void execute(){
         // get joystick
-        double takeSpeed = take.get();
-        double outSpeed = out.get();
+        boolean takeSpeed = take.get();
+        boolean outSpeed = out.get();
 
-        if (takeSpeed > IntakextenderConstants.kIntakeDeadband) {
+        if (takeSpeed) {
             if (hard.get()) {
                 intake.setOutputPercentage(0.8);
+                extender.setOutputPercentage(0.8);
             } else {
-                intake.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
-            }
-            if (!GlobalVariables.getInstance().extenderFull) {
-                if (hard.get()) {
-                    extender.setOutputPercentage(0.8);
-                } else {
+                if (!GlobalVariables.getInstance().extenderFull) {
+                    intake.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
                     extender.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
+
                 }
             }
-
-        } else if (outSpeed > IntakextenderConstants.kIntakeDeadband) {
+        } else if (outSpeed) {
             if (hard.get()) {
                 intake.setOutputPercentage(-0.8);
                 extender.setOutputPercentage(-0.8);
@@ -62,7 +58,8 @@ public class IntakeCmd extends Command{
             intake.setOutputPercentage(0);
             extender.setOutputPercentage(0);
         }
-        if (GlobalVariables.getInstance().extenderFull && outSpeed < IntakextenderConstants.kIntakeDeadband) {
+        if (GlobalVariables.getInstance().extenderFull && !outSpeed && !hard.get()) {
+            intake.setOutputPercentage(0);
             extender.setOutputPercentage(0);
         }
     }

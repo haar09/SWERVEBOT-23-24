@@ -56,7 +56,6 @@ public class AmpShoot extends Command{
                         extender.setOutputPercentage(-0.5);
                     }
                     while (Timer.getFPGATimestamp() - start < 2.5) {
-                        shooter.setAmpSpeed();
                         extender.setOutputPercentage(1);
                     }
                     ending=true;

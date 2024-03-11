@@ -1,20 +1,45 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 0.71,
+      "y": 6.7
+    },
+    "rotation": -120.0
+  },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "1 Note Shoot"
+            "name": "ShootToSpeaker"
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "RotateToShooter"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "1 Note Shoot and Taxi"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeIn"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Go Back to Speaker"
           }
         },
         {

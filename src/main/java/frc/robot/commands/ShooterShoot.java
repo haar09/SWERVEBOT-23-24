@@ -55,7 +55,7 @@ public class ShooterShoot extends Command{
                     while (Timer.getFPGATimestamp() - start < 0.3) {
                         extender.setOutputPercentage(-0.25);
                     }
-                    while (Timer.getFPGATimestamp() - start < 2.5) {
+                    while (Timer.getFPGATimestamp() - start < 1.8) {
                         shooter.setSpeakerSpeed();
                         extender.setOutputPercentage(1);
                     }
