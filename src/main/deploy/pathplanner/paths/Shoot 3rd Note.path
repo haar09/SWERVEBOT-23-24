@@ -3,49 +3,55 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.6,
-        "y": 4.14
+        "x": 8.0,
+        "y": 5.77
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.3372408819951813,
-        "y": 4.126676732781015
+        "x": 3.8297734777287737,
+        "y": 6.99655944766435
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "3rdNote"
     },
     {
       "anchor": {
-        "x": 2.293183835025989,
-        "y": 4.772846754995836
+        "x": 2.1226129724986724,
+        "y": 6.073013600572656
       },
       "prevControl": {
-        "x": 2.3666122466413095,
-        "y": 4.552561520149874
+        "x": 2.7383102038931346,
+        "y": 6.418177199990764
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.25,
+      "rotationDegrees": 170.0,
+      "rotateFast": false
+    }
+  ],
   "constraintZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.5,
+    "maxVelocity": 4.5,
     "maxAcceleration": 3.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 161.0,
-    "rotateFast": true
+    "rotation": -170.0,
+    "rotateFast": false
   },
   "reversed": false,
-  "folder": "3 Note From Middle",
+  "folder": "4 Note from Distance",
   "previewStartingState": {
-    "rotation": 0,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

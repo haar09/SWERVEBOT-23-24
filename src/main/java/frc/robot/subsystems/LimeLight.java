@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
 
@@ -46,7 +46,6 @@ public class LimeLight extends SubsystemBase{
         m_targetList = new ArrayList<Double>(MAX_ENTRIES);
 
         SmartDashboard.putBoolean("Limelight Target", result.hasTargets());
-        Shuffleboard.getTab("stream").addCamera("stream", "Limelight", "http://photonvision.local:1182/stream.mjpg");
     }
 
     @Override
@@ -107,7 +106,9 @@ public class LimeLight extends SubsystemBase{
         return target.getFiducialId();
     }
 
-    public double getTX() {
+    public double getTXwithOffset() {
+        Math.atan(DriveConstants.kSagSolArasi/2 / Math.hypot(cameraToTarget().getX(), cameraToTarget().getY()));
+
         return tx;
     }
 

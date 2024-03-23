@@ -2,8 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDSubsystem extends SubsystemBase {
@@ -12,16 +10,19 @@ public class LEDSubsystem extends SubsystemBase {
     public int[] currentRGB = {0, 0, 0};
     public boolean rainbowMode;
     public double cycleCount = 0;
+    public int direction = 1;
+    public int position = 0;
+    public int delaycounter = 0;
 
     public LEDSubsystem() {
-        rainbowMode = false;
+        rainbowMode = true;
         // Must be a PWM header, not MXP or DIO
-        m_led = new AddressableLED(0);
+        m_led = new AddressableLED(1);
 
         // Reuse buffer
         // Default to a length of 60, start empty output
         // Length is expensive to set, so only set it once, then just update data
-        m_ledBuffer = new AddressableLEDBuffer(14);
+        m_ledBuffer = new AddressableLEDBuffer(21);
         m_led.setLength(m_ledBuffer.getLength());
 
         // Set the data
@@ -32,23 +33,30 @@ public class LEDSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (rainbowMode) {
-           /*for (var i = 0; i < m_ledBuffer.getLength(); i++) {
-                if ((i + cycleCount) % m_ledBuffer.getLength() < 3) {
-                    m_ledBuffer.setRGB(i, 255, 0, 0); // Set to red
-                } else {
-                    m_ledBuffer.setRGB(i, 0, 0, 0); // Set to off
-                }
+            if (delaycounter < 2) {
+                delaycounter++;
+                return;
             }
-            cycleCount = (cycleCount + 0.2) % m_ledBuffer.getLength();
-            m_led.setData(m_ledBuffer);*/
-            SmartDashboard.putString("Leds", "#ff0000");
+            delaycounter = 0;
+            // Move three red LEDs back and forth
+            for (int i = 0; i < m_ledBuffer.getLength(); i++) {
+                m_ledBuffer.setRGB(i, 0, 0, 0); // Set to red
+            }
+            position += direction;
+            if (position == 0 || position == m_ledBuffer.getLength() - 4) {
+                direction *= -1; // Reverse direction when reaching ends
+            }
+            for (int i = position; i < position + 4; i++) {
+                m_ledBuffer.setRGB(i, 255, 0, 0); // Set to red
+            }
+            // Set the LEDs
+            m_led.setData(m_ledBuffer);
         } else {
-            /*for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+            for (var i = 0; i < m_ledBuffer.getLength(); i++) {
                 m_ledBuffer.setRGB(i, currentRGB[0], currentRGB[1], currentRGB[2]);
             }
             // Set the LEDs
-            m_led.setData(m_ledBuffer);*/
-            SmartDashboard.putString("Leds", new Color(currentRGB[0], currentRGB[1], currentRGB[2]).toHexString());
+            m_led.setData(m_ledBuffer);
         }
     }
 

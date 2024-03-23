@@ -1,7 +1,8 @@
 package frc.robot.commands.SetAngle;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.ShooterPivot;
 
 public class Shooter1mAngle extends Command{
@@ -18,11 +19,10 @@ public class Shooter1mAngle extends Command{
 
     @Override
     public void execute() {
-        m_ShooterPivot.setDesiredAngle(Math.toRadians(20)); // 1m
+        m_ShooterPivot.setDesiredAngle(SmartDashboard.getNumber("customAngle", ShooterConstants.k1mAngle));
     }
 
     public void end(boolean interrupted) {
-        RobotContainer.rumble(0, 0, 0, 0);
         m_ShooterPivot.setDesiredAngle(0);
     }
 

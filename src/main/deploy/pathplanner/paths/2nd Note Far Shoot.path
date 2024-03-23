@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.9,
-        "y": 1.0261620523241046
+        "x": 8.130325351559794,
+        "y": 2.3881589581360987
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.899999999999979,
-        "y": 1.0261620523241046
+        "x": 5.7421663934236955,
+        "y": 0.9515320848823523
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "2ndNote Far"
     },
     {
       "anchor": {
-        "x": 2.5890502690096286,
-        "y": 1.0261620523241046
+        "x": 1.9453667998245088,
+        "y": 3.7967995935991876
       },
       "prevControl": {
-        "x": 1.5890502690096286,
-        "y": 1.0261620523241046
+        "x": 3.2513912300551873,
+        "y": 2.173597801741059
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "1stNote Far Shoot"
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": 136.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "2 Note from Distance",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

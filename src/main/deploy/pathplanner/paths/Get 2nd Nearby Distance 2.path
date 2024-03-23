@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 13.9,
-        "y": 1.0261620523241046
+        "x": 2.7190686223948486,
+        "y": 4.111991050457951
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.899999999999979,
-        "y": 1.0261620523241046
+        "x": 2.6162688461334,
+        "y": 4.346961967626977
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "1stNote Alternative"
     },
     {
       "anchor": {
-        "x": 2.5890502690096286,
-        "y": 1.0261620523241046
+        "x": 2.4547263405796946,
+        "y": 4.625989931765195
       },
       "prevControl": {
-        "x": 1.5890502690096286,
-        "y": 1.0261620523241046
+        "x": 2.484097705225823,
+        "y": 4.581932884796002
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "SHOOTED 1ST"
     }
   ],
   "rotationTargets": [],
@@ -39,13 +39,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0,
+    "rotation": 158.0,
     "rotateFast": false
   },
   "reversed": false,
-  "folder": null,
+  "folder": "2 Note Nearby + Distance",
   "previewStartingState": {
-    "rotation": 0.0,
+    "rotation": 180.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

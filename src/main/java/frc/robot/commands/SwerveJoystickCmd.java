@@ -15,18 +15,19 @@ public class SwerveJoystickCmd extends Command{
 
     private final SwerveSubsystem swerveSubsystem;
     private final Supplier<Double> xSpdFunc, ySpdFunc, turnSpdFunc;
-    private final Supplier<Boolean> fieldOrientedFunc, slowMode;
+    private final Supplier<Boolean> fieldOrientedFunc, slowMode, boost;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
     
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunc, Supplier<Double> ySpdFunc, Supplier<Double> turnSpdFunc,
-            Supplier<Boolean> fieldOrientedFunc, Supplier<Boolean> slowMode){
+            Supplier<Boolean> fieldOrientedFunc, Supplier<Boolean> slowMode, Supplier<Boolean> boost){
         this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunc = xSpdFunc;
         this.ySpdFunc = ySpdFunc;
         this.turnSpdFunc = turnSpdFunc;
         this.fieldOrientedFunc = fieldOrientedFunc;
         this.slowMode = slowMode;
+        this.boost = boost;
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
@@ -51,8 +52,13 @@ public class SwerveJoystickCmd extends Command{
         turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0;
 
         // rate limit for smooth acceleration
+        if (boost.get()) {
+        xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveBoostSpeedMetersPerSecond;
+        ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveBoostSpeedMetersPerSecond;
+        } else {
         xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
         ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+        }
         turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 
         if (!slowMode.get()){
@@ -61,11 +67,10 @@ public class SwerveJoystickCmd extends Command{
             turningSpeed *= DriveConstants.kTeleDriveSlowModeMultiplier;
         }
 
-        if (GlobalVariables.getInstance().rotateToTargetSpeed != 0){
-            turningSpeed = GlobalVariables.getInstance().rotateToTargetSpeed;
+        if (GlobalVariables.getInstance().customRotateSpeed != 0){
+            turningSpeed = GlobalVariables.getInstance().customRotateSpeed;
         }
         
-        // construct desired chassis speed
         ChassisSpeeds chassisSpeeds;
         if (fieldOrientedFunc.get()) {
             //field oriented

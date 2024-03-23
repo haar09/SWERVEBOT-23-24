@@ -5,7 +5,6 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,18 +32,15 @@ public class ShooterPivot extends SubsystemBase{
         config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         absoluteEncoder.getConfigurator().apply(config);
 
-        pivotMotor.setSoftLimit(SoftLimitDirection.kForward, ShooterConstants.kMaxShooterAngleRad);
-        pivotMotor.setSoftLimit(SoftLimitDirection.kReverse, ShooterConstants.kMinShooterAngleRad);
-        pivotMotor.enableSoftLimit(SoftLimitDirection.kForward, false);
-        pivotMotor.enableSoftLimit(SoftLimitDirection.kReverse, false);
-
         pivotMotor.burnFlash();
 
         anglePidController = new PIDController(ShooterConstants.kAngleP, ShooterConstants.kAngleI, ShooterConstants.kAngleD);
         anglePidController.setTolerance(ShooterConstants.kAngleToleranceRad);
         anglePidController.enableContinuousInput(-Math.PI, Math.PI);
-        
-        //resetEncoders();
+
+        SmartDashboard.putNumber("customAngle", 30);
+
+        resetEncoders();
     }
 
     @Override
@@ -65,15 +61,16 @@ public class ShooterPivot extends SubsystemBase{
     }
 
     public void setDesiredAngle(double angle){
+        angle = Math.toRadians(angle);
         if (Math.abs(angle) < ShooterConstants.kAngleToleranceRad) {
             stop();
             return;
         }
 
-        if (angle > ShooterConstants.kMaxShooterAngleRad) {
-            angle = ShooterConstants.kMaxShooterAngleRad;
-        } else if (angle < ShooterConstants.kMinShooterAngleRad) {
-            angle = ShooterConstants.kMinShooterAngleRad;
+        if (angle > ShooterConstants.kMaxShooterAngle) {
+            angle = ShooterConstants.kMaxShooterAngle;
+        } else if (angle < ShooterConstants.kMinShooterAngle) {
+            angle = ShooterConstants.kMinShooterAngle;
         }
 
         pivotMotor.set(anglePidController.calculate(getAngle(), angle));
@@ -82,16 +79,4 @@ public class ShooterPivot extends SubsystemBase{
     public void stop(){
         pivotMotor.set(0);
     }
-
-    /*public double getShooterHeight() {
-        double shooterHeadAngle = Math.toDegrees(getAngle()) - ShooterConstants.kPivotToShooterMouthDegrees;
-        double shooterMouthHeight = Math.sin(shooterHeadAngle) * ShooterConstants.kPivotToShooterMouthMeters;        
-        return shooterMouthHeight + ShooterConstants.kPivotHeightMeters;
-    }
-
-    public double getShooterDistance(double apriltagToLimelight){
-        double shooterHeadAngle = Math.toDegrees(getAngle()) - ShooterConstants.kPivotToShooterMouthDegrees;
-        double shooterMouthBehind = Math.cos(shooterHeadAngle) * ShooterConstants.kPivotToShooterMouthMeters;
-        return ShooterConstants.kPivotToCameraXDistanceMeters - shooterMouthBehind + apriltagToLimelight;
-    }*/
 }

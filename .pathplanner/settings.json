@@ -3,11 +3,13 @@
   "robotLength": 0.84,
   "holonomicMode": true,
   "pathFolders": [
-    "1 Note From Amp Side",
-    "3 Note From Middle"
+    "2 Note from Distance",
+    "4 Note Nearby",
+    "4 Note from Distance",
+    "2 Note Nearby + Distance"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 3.5,
+  "defaultMaxVel": 4.5,
   "defaultMaxAccel": 3.5,
   "defaultMaxAngVel": 540.0,
   "defaultMaxAngAccel": 720.0,

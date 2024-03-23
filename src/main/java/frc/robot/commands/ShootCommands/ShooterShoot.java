@@ -1,34 +1,29 @@
-package frc.robot.commands;
+package frc.robot.commands.ShootCommands;
 
 import java.util.function.Supplier;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-//import frc.robot.GlobalVariables;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.ColorSensor;
 import frc.robot.subsystems.Extender;
-import frc.robot.subsystems.LEDSubsystem;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 public class ShooterShoot extends Command{
     private final Supplier<Double> rightTrigger;
     private final Shooter shooter;
     private final Extender extender;
-    private final ColorSensor colorSensor;
+    private final Intake intake;
     private boolean ending;
     private double start;
 
-    private final LEDSubsystem ledSubsystem;
-
-    public ShooterShoot(Supplier<Double> rightTrigger ,Shooter shooter, Extender extender, LEDSubsystem ledSubsystem, ColorSensor colorSensor){
+    public ShooterShoot(Supplier<Double> rightTrigger ,Shooter shooter, Intake intake,Extender extender){
         this.shooter = shooter;
         this.extender = extender;
-        this.ledSubsystem = ledSubsystem;
+        this.intake = intake;
         this.rightTrigger = rightTrigger;
-        this.colorSensor = colorSensor;
         ending = false;
-        addRequirements(shooter, extender, ledSubsystem); 
+        addRequirements(shooter, extender); 
     }
 
     @Override
@@ -39,38 +34,30 @@ public class ShooterShoot extends Command{
     @Override
     public void execute(){
             shooter.ledIdle = false;
-            ledSubsystem.setColor(0, 0, 255);
             shooter.setSpeakerSpeed();
-            /*while (rightTrigger.get() < 0.3) {
-                RobotContainer.rumble(0, 0, 0, 0);
-                //wait
-            }*/
             if (rightTrigger.get() > 0.3) {
-                if (colorSensor.getSensor()) {
-                    RobotContainer.rumble(0, 0, 0, 0);
-                }  else {
-                    RobotContainer.rumble(1,1, 1, 1);
-                }
                     start = Timer.getFPGATimestamp();
-                    while (Timer.getFPGATimestamp() - start < 0.3) {
-                        extender.setOutputPercentage(-0.25);
+                    while (Timer.getFPGATimestamp() - start < 0.15) {
+                        extender.setOutputPercentage(-0.5);
                     }
-                    while (Timer.getFPGATimestamp() - start < 1.8) {
+                    while (Timer.getFPGATimestamp() - start < 1.3) {
                         shooter.setSpeakerSpeed();
                         extender.setOutputPercentage(1);
+                        intake.setOutputPercentage(0.6);
                     }
                     ending=true;
                     end(false);
                     extender.setOutputPercentage(0);
                     shooter.stopShooter();
-            } else {
-                RobotContainer.rumble(0, 0, 0, 0);
             }
     }
     
     @Override
     public void end(boolean interrupted){
-        shooter.stopShooter();
+        intake.setOutputPercentage(0);
+        extender.setOutputPercentage(0);
+        shooter.stopShooter();    
+        SmartDashboard.putBoolean("shooterReady", false);
     }
 
     @Override

@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.GlobalVariables;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 
@@ -72,8 +73,10 @@ public class SwerveSubsystem extends SubsystemBase{
     private AHRS gyro = new AHRS(SPI.Port.kMXP);
     private final Field2d field = new Field2d();
     private GenericEntry resetNavXEntry;
-    private final SwerveDrivePoseEstimator poseEstimator;
+    public final SwerveDrivePoseEstimator poseEstimator;
     private final LimeLight limelight;
+    public double speakerDistance;
+    public double kSpeakerPose;
 
     public SwerveSubsystem(LimeLight m_limeLight) {
         new Thread (() -> {
@@ -84,7 +87,6 @@ public class SwerveSubsystem extends SubsystemBase{
                         gyro.reset();
                         break;
                     } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                 }
@@ -131,6 +133,7 @@ public class SwerveSubsystem extends SubsystemBase{
 
         limelight = m_limeLight;
 
+        resetEncoders();
 
         // Configure AutoBuilder last
         AutoBuilder.configureHolonomic(
@@ -142,7 +145,7 @@ public class SwerveSubsystem extends SubsystemBase{
                         new PIDConstants(AutoConstants.kPXYController, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(AutoConstants.kPThetaController, 0.0, 0.0), // Rotation PID constants
                         AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s
-                        new Translation2d(DriveConstants.kOnArkaArasi / 2, DriveConstants.kSagSolArasi / 2).getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
+                        new Translation2d(0.259428, DriveConstants.kSagSolArasi / 2).getNorm(), // Drive base radius in meters. Distance from robot center to furthest module.
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
                 () -> {
@@ -160,8 +163,16 @@ public class SwerveSubsystem extends SubsystemBase{
         );
     }
 
+    private void resetEncoders() {
+        FL.resetEncoders();
+        FR.resetEncoders();
+        BL.resetEncoders();
+        BR.resetEncoders();
+    }
+
     public void zeroHeading() {
         gyro.reset();
+        resetEncoders();
         System.out.println("RESETTED!");
     }
 
@@ -248,6 +259,27 @@ public class SwerveSubsystem extends SubsystemBase{
             zeroHeading();
             resetNavXEntry.setBoolean(false);
         }
+
+        if (DriverStation.getAlliance().isPresent()) {
+            if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+                kSpeakerPose = 15.655;
+            } else {
+                kSpeakerPose = 0.885;
+            }
+        } else {
+                kSpeakerPose = 1000;
+        }
+        double y = Math.abs(getPose().getY() - 5.55);
+        if (y<0.5) {
+            y = 0;
+        }
+        speakerDistance = Math.hypot(
+            Math.abs(getPose().getX() - kSpeakerPose),
+            y
+        )-0.42;
+
+        GlobalVariables.getInstance().speakerDistance = speakerDistance;
+        SmartDashboard.putNumber("speakerDistance", speakerDistance);    
     }
 
     public void switchIdleMode(){

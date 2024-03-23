@@ -1,8 +1,6 @@
 package frc.robot.commands.SetAngle;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.RobotContainer;
-import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.ShooterPivot;
 
 public class AmpAngle extends Command{
@@ -19,11 +17,10 @@ public class AmpAngle extends Command{
 
     @Override
     public void execute() {
-        m_ShooterPivot.setDesiredAngle(ShooterConstants.kMaxShooterAngleRad);
+        m_ShooterPivot.setDesiredAngle(30);
     }
 
     public void end(boolean interrupted) {
-        RobotContainer.rumble(0, 0, 0, 0);
         m_ShooterPivot.setDesiredAngle(0);
     }
 

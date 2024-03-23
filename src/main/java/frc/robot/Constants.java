@@ -10,8 +10,6 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -20,7 +18,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 
 public final class Constants {
   
@@ -39,23 +36,23 @@ public final class Constants {
   public static class DriveConstants {
 
     public static final double kSagSolArasi = 0.51435;
-    public static final double kOnArkaArasi = 0.36195;
+    
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-        new Translation2d(kOnArkaArasi / 2, kSagSolArasi / 2),
-        new Translation2d(kOnArkaArasi / 2, -kSagSolArasi / 2),
-        new Translation2d(-kOnArkaArasi / 2, kSagSolArasi / 2),
-        new Translation2d(-kOnArkaArasi / 2, -kSagSolArasi / 2)
+        new Translation2d(0.259428, kSagSolArasi / 2),
+        new Translation2d(0.259428, -kSagSolArasi / 2),
+        new Translation2d(-0.102523, kSagSolArasi / 2),
+        new Translation2d(-0.102523, -kSagSolArasi / 2)
     ); 
 
-    public static final int kFLDriveMotorPort = 62;
-    public static final int kBLDriveMotorPort = 1;
+    public static final int kFLDriveMotorPort = 5;
+    public static final int kBLDriveMotorPort = 9;
     public static final int kFRDriveMotorPort = 14;
-    public static final int kBRDriveMotorPort = 12;
+    public static final int kBRDriveMotorPort = 13;
 
-    public static final int kFLTurningMotorPort = 2;
-    public static final int kBLTurningMotorPort = 3;
-    public static final int kFRTurningMotorPort = 15;
-    public static final int kBRTurningMotorPort = 13;
+    public static final int kFLTurningMotorPort = 4;
+    public static final int kBLTurningMotorPort = 8;
+    public static final int kFRTurningMotorPort = 62;
+    public static final int kBRTurningMotorPort = 2;
 
     public static final boolean kFLTurningEncoderReversed = true;
     public static final boolean kBLTurningEncoderReversed = true;
@@ -64,24 +61,25 @@ public final class Constants {
 
     public static final boolean kFLDriveEncoderReversed = false;
     public static final boolean kBLDriveEncoderReversed = false;
-    public static final boolean kFRDriveEncoderReversed = false;
-    public static final boolean kBRDriveEncoderReversed = false;
+    public static final boolean kFRDriveEncoderReversed = true;
+    public static final boolean kBRDriveEncoderReversed = true;
 
     public static final int kFLTurningAbsoluteEncoderPort = 51; 
     public static final int kBLTurningAbsoluteEncoderPort = 50; 
     public static final int kFRTurningAbsoluteEncoderPort = 52;
     public static final int kBRTurningAbsoluteEncoderPort = 53; 
 
-    public static final double kFLTurningAbsoluteEncoderOffset = -0.456299;
-    public static final double kBLTurningAbsoluteEncoderOffset = 0.321533;
-    public static final double kFRTurningAbsoluteEncoderOffset = 0.154053;
-    public static final double kBRTurningAbsoluteEncoderOffset = -0.376953;
+    public static final double kFLTurningAbsoluteEncoderOffset = -0.92163;
+    public static final double kBLTurningAbsoluteEncoderOffset = -0.632812;
+    public static final double kFRTurningAbsoluteEncoderOffset = -0.346680;
+    public static final double kBRTurningAbsoluteEncoderOffset = -0.272217;
 
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
 
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 1.25;
-    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2 / 2;
+    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 1.5;
+    public static final double kTeleDriveBoostSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 1.11;
+    public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2 / 1.66;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
@@ -90,22 +88,12 @@ public final class Constants {
   }
   
   public static final class AutoConstants {
-    public static final double kMaxSpeedMetersPerSecond = 3;
-    public static final double kPXYController = 3.5;
+    public static final double kMaxSpeedMetersPerSecond = 4.5;
+    public static final double kPXYController = 3.2;
     public static final double kPThetaController = 2;
 
     public static final PathConstraints kPathConstraints = new PathConstraints(
-      kMaxSpeedMetersPerSecond, 3.0, Math.toRadians(540), Math.toRadians(720));
-
-    public static Pose2d kAmpPose;
-
-    static {
-        if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-            kAmpPose = new Pose2d(14.6, 7.8, Rotation2d.fromDegrees(90));
-        } else {
-            kAmpPose = new Pose2d(1.9, 7.8, Rotation2d.fromDegrees(90));
-        }
-    }
+      kMaxSpeedMetersPerSecond, 3.5, Math.toRadians(540), Math.toRadians(720));
   }
 
   public static class OIConstants {
@@ -113,54 +101,59 @@ public final class Constants {
   }
 
   public static class VisionConstants {
-    public static final double kLimeLightMountAngleRadians = Math.toRadians(-25);
-    public static final double kLimeLightHeightMeters = 0.27;
+    public static final double kLimeLightMountAngleRadians = Math.toRadians(-30);
+    public static final double kLimeLightHeightMeters = 0.26;
 
     public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(0.34, 0.0, kLimeLightHeightMeters), new Rotation3d(0, kLimeLightMountAngleRadians, 0));
+                new Transform3d(new Translation3d(0.309428, 0.18217, kLimeLightHeightMeters), new Rotation3d(0, kLimeLightMountAngleRadians, 0));
     public static final AprilTagFieldLayout kTagLayout =
                 AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
-    
-    public static final double kTXTolerance = 2.5;
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 11); // bi bak
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.15, 0.15, 1);
   }
 
   public static class PIDConstants{
     public static final double kPTurning = 0.45;
-    public static final double kPLimeLightRotate = 0.05;
+    public static final double kDTurning = 0;
+
+    public static final double kPLimeLightRotate = 0.034;
+    public static final double kDLimeLightRotate = 0;
+
+    public static final double kP180Rotate = 0.045;
+    public static final double kD180Rotate = 0.00001;
   }
 
   public static class ShooterConstants{
     
     public static final double kGearRatio = 1.0 / 11.357; // CANCODERIN GEAR RATIO
     public static final double kPivotMotorRot2Rad = kGearRatio * 2 * Math.PI;
-    public static final float kMinShooterAngleRad = (float)Math.toRadians(0);
-    public static final float kMaxShooterAngleRad = (float)Math.toRadians(37);
-
-    /*public static final double kPivotToShooterMouthDegrees = 28;
-    public static final double kPivotToShooterMouthMeters = 0.1745;
-    public static final double kPivotHeightMeters = 0.361;
-    public static final double kPivotToCameraXDistanceMeters = ??;*/
+    public static final float kMinShooterAngle = 0;
+    public static final float kMaxShooterAngle = 39;
 
     public static final int kPivotMotorId = 11;
     public static final int kAbsoluteEncoderId = 54;
 
-    public static final double kAbsoluteEncoderOffset = 0.048096;
+    public static final double kAbsoluteEncoderOffset = 0.105713;
     public static final boolean kPivotMotorReversed = true;
 
     public static final double kAngleP = 1;
     public static final double kAngleI = 0;
     public static final double kAngleD = 0;
-    public static final double kAngleToleranceRad = Math.toRadians(2);
-    public static final double kAngleH = 0;
+    public static final double kAngleToleranceRad = Math.toRadians(0.05);
+
+    public static final double k0mAngle = 26; //26
+    public static final double k05mAngle = 20.1; //20.1
+    public static final double k1mAngle = 14; //14
+    public static final double k15mAngle = 7; //7
+    public static final double k2mAngle = 4.4; //4.4 
+    public static final double k25mAngle = 0.9; //0.9
 
     ////////////////////////////////////////////////////////////////////////////////
     
     
-    public static final int kShooterMotorLeftId = 5;
-    public static final int kShooterMotorRightId = 9;    
+    public static final int kShooterMotorLeftId = 1;
+    public static final int kShooterMotorRightId = 3;    
   
     public static final boolean kShooterMotorLeftReversed = false;
     public static final boolean kShooterMotorRightReversed = true; 
@@ -168,20 +161,14 @@ public final class Constants {
     public static final double kSpeakerSpeedLeft = 0.8;
     public static final double kSpeakerSpeedRight = 0.7;
 
-    public static final double kAmpSpeedLeft = 0.58;
-    public static final double kAmpSpeedRight = 0.48;
-
-    /*public static final double kShooterMotorP = 0;
-    public static final double kShooterMotorI = 0;
-    public static final double kShooterMotorD = 0;
-    public static final double kShooterMotorIzone = 0;
-    public static final double kShooterMotorFF = 0;*/
+    public static final double kAmpSpeedLeft = 0.40;
+    public static final double kAmpSpeedRight = 0.35;
   }
 
   public static class IntakextenderConstants{
-    public static final int kIntakeMotorId = 8;
+    public static final int kIntakeMotorId = 10;
     public static final boolean kIntakeMotorReversed = false;
-    public static final double kIntakeMotorSpeed = 0.4;
+    public static final double kIntakeMotorSpeed = 0.5;
     public static final double kIntakeDeadband = 0.3;
 
 

@@ -7,34 +7,28 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.ArrayList;
 
-//import java.util.ArrayList;
-
 import com.revrobotics.ColorSensorV3;
 
 public class ColorSensor extends SubsystemBase{
-  private final I2C.Port i2cPort = I2C.Port.kOnboard;
-  //private final I2C.Port i2cPort2 = I2C.Port.kMXP;
-  private final ColorSensorV3 m_colorSensor/*, m_colorSensor2*/;
-  public int red/*, red2*/;
+  private final I2C.Port i2cPort = I2C.Port.kOnboard;  
+  private final ColorSensorV3 m_colorSensor;
+  public int red;
   private ArrayList<Boolean> m_targetList;
-  private final int MAX_ENTRIES = 40;
+  private final int MAX_ENTRIES = 60;
   
   public ColorSensor() {
     m_colorSensor = new ColorSensorV3(i2cPort);
-    //m_colorSensor2 = new ColorSensorV3(i2cPort2);
 
     m_targetList = new ArrayList<Boolean>(MAX_ENTRIES);
-    SmartDashboard.putNumber("COLOR SENSOR", 225);
+    SmartDashboard.putNumber("COLOR SENSOR", 265);
   }
 
   @Override
   public void periodic() {
     red = m_colorSensor.getRed();
-    //red2 = m_colorSensor2.getRed();
 
     SmartDashboard.putNumber("red", red);
     SmartDashboard.putNumber("proximity", m_colorSensor.getProximity());
-    //SmartDashboard.putNumber("red2", red2);
 
     m_targetList.add(getSensor());
     
@@ -46,7 +40,7 @@ public class ColorSensor extends SubsystemBase{
   }
 
   public boolean getSensor() {
-    if (/*red2 > 95 || */red > SmartDashboard.getNumber("COLOR SENSOR", 125)) {
+    if (red > SmartDashboard.getNumber("COLOR SENSOR", 265)) {
       return true;
     } else {
       return false;

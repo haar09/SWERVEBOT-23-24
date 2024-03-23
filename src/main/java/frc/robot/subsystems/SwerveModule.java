@@ -44,7 +44,7 @@ public class SwerveModule{
             absoluteEncoder = new CANcoder(absoluteEncoderId);
             CANcoderConfiguration config = new CANcoderConfiguration();
             config.MagnetSensor.MagnetOffset = absoluteEncoderOffset;
-            config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Signed_PlusMinusHalf; //plus minus or unsigned
+            config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1; //plus minus or unsigned
             config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
             absoluteEncoder.getConfigurator().apply(config);
 
@@ -53,7 +53,7 @@ public class SwerveModule{
             turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderRot2Rad);
             turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderRPM2RadPerSec);
 
-            turningPidController = new PIDController(PIDConstants.kPTurning, 0, 0);
+            turningPidController = new PIDController(PIDConstants.kPTurning, 0, PIDConstants.kDTurning);
             turningPidController.enableContinuousInput(-Math.PI, Math.PI);
 
             driveMotor.burnFlash();

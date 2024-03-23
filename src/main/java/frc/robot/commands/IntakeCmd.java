@@ -40,7 +40,7 @@ public class IntakeCmd extends Command{
             } else {
                 if (!GlobalVariables.getInstance().extenderFull) {
                     intake.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
-                    extender.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
+                    extender.setOutputPercentage(0.3);
 
                 }
             }
@@ -50,7 +50,7 @@ public class IntakeCmd extends Command{
                 extender.setOutputPercentage(-0.8);
             } else {
                 intake.setOutputPercentage(-IntakextenderConstants.kIntakeMotorSpeed);
-                extender.setOutputPercentage(-IntakextenderConstants.kIntakeMotorSpeed);
+                extender.setOutputPercentage(-0.3);
             }
 
         }

@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 2,
-      "y": 2
+      "x": 0.74,
+      "y": 4.46
     },
-    "rotation": 0
+    "rotation": 120.0
   },
   "command": {
     "type": "sequential",
@@ -14,7 +14,13 @@
         {
           "type": "named",
           "data": {
-            "name": "IntakeIn"
+            "name": "ShootToSpeaker0m"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "troll auto"
           }
         }
       ]
