@@ -51,35 +51,68 @@ public class Shooter extends SubsystemBase{
         ledIdle = true;
     }
 
+    public enum ShooterState {
+        IDLE,
+        ACCELERATING,
+        READY
+    }
+
+    public ShooterState state = ShooterState.IDLE;
+    private double startTime;
+
     public void setSpeakerSpeed() {
-        SmartDashboard.putBoolean("shooterReady", false);
-        ledIdle = false;
-        leftMotor.set(ShooterConstants.kSpeakerSpeedLeft);
-        rightMotor.set(ShooterConstants.kSpeakerSpeedRight);
-        time = Timer.getFPGATimestamp();
-        while (leftEncoder.getVelocity() < 3400 && rightEncoder.getVelocity() < 2900) {
-            if (Timer.getFPGATimestamp() - time > 2) {
-                stopShooter();
-                return;
-            }
-            leftMotor.set(ShooterConstants.kSpeakerSpeedLeft);
-            rightMotor.set(ShooterConstants.kSpeakerSpeedRight);
+        switch (state) {
+            case IDLE:
+                SmartDashboard.putBoolean("shooterReady", false);
+                ledIdle = false;    
+                leftMotor.set(ShooterConstants.kSpeakerSpeedLeft);
+                rightMotor.set(ShooterConstants.kSpeakerSpeedRight);
+                startTime = Timer.getFPGATimestamp();
+                state = ShooterState.ACCELERATING; 
+                ledSubsystem.setColor(0, 0, 0);
+                break;
+            case ACCELERATING:
+                if (leftEncoder.getVelocity() >= 4100 && rightEncoder.getVelocity() >= 2400) {
+                    ledSubsystem.setColor(0, 255, 0);
+                    SmartDashboard.putBoolean("shooterReady", true);
+                    state = ShooterState.READY;
+                } else if (Timer.getFPGATimestamp() - startTime > 2) {
+                    stopShooter();
+                    state = ShooterState.IDLE;
+                }
+            break;
+            case READY:
+                leftMotor.set(ShooterConstants.kSpeakerSpeedLeft);
+                rightMotor.set(ShooterConstants.kSpeakerSpeedRight);
+                break;
         }
-        ledSubsystem.setColor(0, 255, 0);
-        SmartDashboard.putBoolean("shooterReady", true);
     }
 
     public void setAmpSpeed() {
-        SmartDashboard.putBoolean("shooterReady", false);
-        ledIdle = false;
-        leftMotor.set(ShooterConstants.kAmpSpeedLeft);
-        rightMotor.set(ShooterConstants.kAmpSpeedRight);
-        while (leftEncoder.getVelocity() < 600 && rightEncoder.getVelocity() < 600) {
-            leftMotor.set(ShooterConstants.kAmpSpeedLeft);
-            rightMotor.set(ShooterConstants.kAmpSpeedRight);
+        switch (state) {
+            case IDLE:
+                SmartDashboard.putBoolean("shooterReady", false);
+                ledIdle = false;    
+                leftMotor.set(ShooterConstants.kAmpSpeedLeft);
+                rightMotor.set(ShooterConstants.kAmpSpeedRight);
+                startTime = Timer.getFPGATimestamp();
+                state = ShooterState.ACCELERATING; 
+                break;
+            case ACCELERATING:
+                if (leftEncoder.getVelocity() >= 2000 && rightEncoder.getVelocity() >= 2000) {
+                    ledSubsystem.setColor(0, 255, 0);
+                    SmartDashboard.putBoolean("shooterReady", true);
+                    state = ShooterState.READY;
+                } else if (Timer.getFPGATimestamp() - startTime > 2) {
+                    stopShooter();
+                    state = ShooterState.IDLE;
+                }
+            break;
+            case READY:
+                leftMotor.set(ShooterConstants.kAmpSpeedLeft);
+                rightMotor.set(ShooterConstants.kAmpSpeedRight);
+                break;
         }
-        ledSubsystem.setColor(0, 255, 0);
-        SmartDashboard.putBoolean("shooterReady", true);
     }
 
     public void stopShooter() {

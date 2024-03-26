@@ -29,7 +29,6 @@ public class IntakeIn extends Command{
         intake.setOutputPercentage(0.3);
         extender.setOutputPercentage(0.4);
         } else {
-            System.out.println("help");
             intake.setOutputPercentage(0);
             extender.setOutputPercentage(0);
             ending = true;

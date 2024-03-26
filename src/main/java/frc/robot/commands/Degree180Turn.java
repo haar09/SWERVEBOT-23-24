@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.PIDConstants;
@@ -10,6 +11,7 @@ public class Degree180Turn extends Command{
     private final SwerveSubsystem swerveSubsystem;
     private double currentAngle;
     private double targetAngle;
+    private double startTime;
 
     public Degree180Turn(SwerveSubsystem swerveSubsystem){
         this.swerveSubsystem = swerveSubsystem;
@@ -23,6 +25,7 @@ public class Degree180Turn extends Command{
         targetAngle %= 360;
         targetAngle -= 180;
         System.out.println(targetAngle);
+        startTime = Timer.getFPGATimestamp();
     }
 
     @Override
@@ -38,6 +41,9 @@ public class Degree180Turn extends Command{
 
     @Override
     public boolean isFinished(){
+        if (Timer.getFPGATimestamp() - startTime > 4) {
+            return true;
+        }
         if (currentAngle >= (targetAngle-10+180)%360-180 && currentAngle <= (targetAngle+10+180)%360-180){
             return true;
         }

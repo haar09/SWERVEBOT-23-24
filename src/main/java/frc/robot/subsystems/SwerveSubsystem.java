@@ -278,6 +278,24 @@ public class SwerveSubsystem extends SubsystemBase{
             y
         )-0.42;
 
+        /*if (DriverStation.getAlliance().isPresent()) {
+            if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+                kSpeakerPose = 1;
+            } else {
+                kSpeakerPose = -0.038;
+            }
+        } else {
+                kSpeakerPose = 1000;
+        }
+        double y = Math.abs(getPose().getY() - 5.55);
+        if (y<0.3) {
+            y = 0;
+        }
+        speakerDistance = Math.hypot(
+            Math.abs(getPose().getX() - kSpeakerPose),
+            y
+        )-0.42;*/
+
         GlobalVariables.getInstance().speakerDistance = speakerDistance;
         SmartDashboard.putNumber("speakerDistance", speakerDistance);    
     }

@@ -59,20 +59,20 @@ public final class Constants {
     public static final boolean kFRTurningEncoderReversed = true;
     public static final boolean kBRTurningEncoderReversed = true;
 
-    public static final boolean kFLDriveEncoderReversed = false;
-    public static final boolean kBLDriveEncoderReversed = false;
-    public static final boolean kFRDriveEncoderReversed = true;
-    public static final boolean kBRDriveEncoderReversed = true;
+    public static final boolean kFLDriveEncoderReversed = true;
+    public static final boolean kBLDriveEncoderReversed = true;
+    public static final boolean kFRDriveEncoderReversed = false;
+    public static final boolean kBRDriveEncoderReversed = false;
 
     public static final int kFLTurningAbsoluteEncoderPort = 51; 
     public static final int kBLTurningAbsoluteEncoderPort = 50; 
     public static final int kFRTurningAbsoluteEncoderPort = 52;
     public static final int kBRTurningAbsoluteEncoderPort = 53; 
 
-    public static final double kFLTurningAbsoluteEncoderOffset = -0.92163;
-    public static final double kBLTurningAbsoluteEncoderOffset = -0.632812;
-    public static final double kFRTurningAbsoluteEncoderOffset = -0.346680;
-    public static final double kBRTurningAbsoluteEncoderOffset = -0.272217;
+    public static final double kFLTurningAbsoluteEncoderOffset = -0.422363;
+    public static final double kBLTurningAbsoluteEncoderOffset = -0.129883;
+    public static final double kFRTurningAbsoluteEncoderOffset = -0.845703;
+    public static final double kBRTurningAbsoluteEncoderOffset = -0.775879;
 
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
@@ -93,7 +93,7 @@ public final class Constants {
     public static final double kPThetaController = 2;
 
     public static final PathConstraints kPathConstraints = new PathConstraints(
-      kMaxSpeedMetersPerSecond, 3.5, Math.toRadians(540), Math.toRadians(720));
+      kMaxSpeedMetersPerSecond, 3, Math.toRadians(540), Math.toRadians(720));
   }
 
   public static class OIConstants {
@@ -105,7 +105,7 @@ public final class Constants {
     public static final double kLimeLightHeightMeters = 0.26;
 
     public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(0.309428, 0.18217, kLimeLightHeightMeters), new Rotation3d(0, kLimeLightMountAngleRadians, 0));
+                new Transform3d(new Translation3d(0.294428, 0.184428, kLimeLightHeightMeters), new Rotation3d(0, kLimeLightMountAngleRadians, 0));
     public static final AprilTagFieldLayout kTagLayout =
                 AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
@@ -134,7 +134,7 @@ public final class Constants {
     public static final int kPivotMotorId = 11;
     public static final int kAbsoluteEncoderId = 54;
 
-    public static final double kAbsoluteEncoderOffset = 0.105713;
+    public static final double kAbsoluteEncoderOffset = -0.028320;
     public static final boolean kPivotMotorReversed = true;
 
     public static final double kAngleP = 1;
@@ -158,11 +158,11 @@ public final class Constants {
     public static final boolean kShooterMotorLeftReversed = false;
     public static final boolean kShooterMotorRightReversed = true; 
   
-    public static final double kSpeakerSpeedLeft = 0.8;
-    public static final double kSpeakerSpeedRight = 0.7;
+    public static final double kSpeakerSpeedLeft = 0.9;
+    public static final double kSpeakerSpeedRight = 0.6;
 
-    public static final double kAmpSpeedLeft = 0.40;
-    public static final double kAmpSpeedRight = 0.35;
+    public static final double kAmpSpeedLeft = 0.50;
+    public static final double kAmpSpeedRight = 0.50;
   }
 
   public static class IntakextenderConstants{

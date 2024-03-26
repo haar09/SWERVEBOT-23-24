@@ -6,6 +6,7 @@ import frc.robot.GlobalVariables;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Shooter.ShooterState;
 import frc.robot.subsystems.ShooterPivot;
 
 public class SpeakerShoot extends Command{
@@ -31,33 +32,35 @@ public class SpeakerShoot extends Command{
     @Override
     public void initialize(){
         ending = false;
+        shooter.state = ShooterState.IDLE;
     }
 
     @Override
     public void execute(){
+            shooter.setSpeakerSpeed();
             if (desiredAngle == 0) {
                 desiredAngle = GlobalVariables.getInstance().speakerToAngle();
             }
             m_ShooterPivot.setDesiredAngle(desiredAngle);
-            shooter.ledIdle = false;
             ledSubsystem.setColor(0, 0, 255);
-            shooter.setSpeakerSpeed();
-            start = Timer.getFPGATimestamp();
-            while (Timer.getFPGATimestamp() - start < 0.15) {
-                 extender.setOutputPercentage(-0.5);
-                 m_ShooterPivot.setDesiredAngle(desiredAngle);
+            if (shooter.state == ShooterState.READY) {
+                start = Timer.getFPGATimestamp();
+                while (Timer.getFPGATimestamp() - start < 0.15) {
+                    extender.setOutputPercentage(-0.5);
+                    m_ShooterPivot.setDesiredAngle(desiredAngle);
+                }
+                while (Timer.getFPGATimestamp() - start < 1.1) {
+                    shooter.setSpeakerSpeed();
+                    extender.setOutputPercentage(1);
+                    m_ShooterPivot.setDesiredAngle(desiredAngle);
+                }
+                ending=true;
             }
-            while (Timer.getFPGATimestamp() - start < 1.1) {
-                shooter.setSpeakerSpeed();
-                extender.setOutputPercentage(1);
-                m_ShooterPivot.setDesiredAngle(desiredAngle);
-            }
-            shooter.ledIdle = true;
-            ending=true;
     }
     
     @Override
     public void end(boolean interrupted){
+        shooter.state = ShooterState.IDLE;
         shooter.stopShooter();
         extender.setOutputPercentage(0);
     }

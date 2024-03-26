@@ -24,7 +24,7 @@ public class GoToSource extends Command{
                 targetPose = new Pose2d(13.9, 1, Rotation2d.fromDegrees(0));
         }
 
-            // Create the constraints to use while pathfinding
+            // Create the constraints to use pathfinding
             PathConstraints constraints = AutoConstants.kPathConstraints;
 
             // Since AutoBuilder is configured, we can use it to build pathfinding commands

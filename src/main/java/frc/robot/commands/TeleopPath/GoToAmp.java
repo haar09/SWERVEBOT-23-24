@@ -23,7 +23,7 @@ public class GoToAmp extends Command{
         } else {
             targetPose = new Pose2d(1.84, 8.1, Rotation2d.fromDegrees(90));
         }
-            // Create the constraints to use while pathfinding
+            // Create the constraints to use pathfinding
             PathConstraints constraints = AutoConstants.kPathConstraints;
 
             // Since AutoBuilder is configured, we can use it to build pathfinding commands

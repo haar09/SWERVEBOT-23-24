@@ -23,7 +23,7 @@ public class GoToSpeaker extends Command{
         } else {
                 targetPose = new Pose2d(2.54, 5.5, Rotation2d.fromDegrees(-180));
         }
-            // Create the constraints to use while pathfinding
+            // Create the constraints to use pathfinding
             PathConstraints constraints = AutoConstants.kPathConstraints;
 
             // Since AutoBuilder is configured, we can use it to build pathfinding commands
