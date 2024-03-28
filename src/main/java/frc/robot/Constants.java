@@ -75,12 +75,13 @@ public final class Constants {
     public static final double kBRTurningAbsoluteEncoderOffset = -0.775879;
 
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
-    public static final double kPhysicalMaxSpeedMetersPerSecond = 5;
+    public static final double kPhysicalMaxSpeedMetersPerSecond = 4.8;
 
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 1.5;
-    public static final double kTeleDriveBoostSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 1.11;
+    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.65;
+    public static final double kTeleDriveBoostSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.9;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2 / 1.66;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
+    public static final double kTeleDriveBoostMaxAccelerationUnitsPerSecond = 1.5;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
     public static final double kTeleDriveSlowModeMultiplier = (1.0/8.0);
@@ -109,13 +110,12 @@ public final class Constants {
     public static final AprilTagFieldLayout kTagLayout =
                 AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 11); // bi bak
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.15, 0.15, 1);
+    public static final Matrix<N3, N1> kTagStdDevs = VecBuilder.fill(4, 4, 1);
   }
 
   public static class PIDConstants{
     public static final double kPTurning = 0.45;
-    public static final double kDTurning = 0;
+    public static final double kDTurning = 0.001;
 
     public static final double kPLimeLightRotate = 0.034;
     public static final double kDLimeLightRotate = 0;

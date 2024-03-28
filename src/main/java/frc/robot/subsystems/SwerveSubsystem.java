@@ -6,7 +6,6 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -16,8 +15,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
@@ -31,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.VisionConstants;
 
 public class SwerveSubsystem extends SubsystemBase{
     
@@ -121,7 +119,7 @@ public class SwerveSubsystem extends SubsystemBase{
         .getEntry();
 
         //pose estimation
-        var stateStdDevs = VecBuilder.fill(0.1, 0.1, 0.1);
+        var stateStdDevs = VecBuilder.fill(0.05, 0.05, Math.toRadians(5));
         var visionStdDevs = VecBuilder.fill(1, 1, 1);
         poseEstimator = new SwerveDrivePoseEstimator(
                 DriveConstants.kDriveKinematics,
@@ -130,6 +128,9 @@ public class SwerveSubsystem extends SubsystemBase{
                 new Pose2d(),
                 stateStdDevs,
                 visionStdDevs);
+
+        poseEstimator.setVisionMeasurementStdDevs(VisionConstants.kTagStdDevs);
+
 
         limelight = m_limeLight;
 
@@ -171,13 +172,16 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     public void zeroHeading() {
+        gyroOffset = 0;
         gyro.reset();
         resetEncoders();
         System.out.println("RESETTED!");
     }
 
+    public double gyroOffset = 0;
+
     public double getHeading() {
-        return gyro.getYaw() * -1;
+        return gyro.getYaw() * -1 + gyroOffset;
     }
 
     public Rotation2d getRotation2d() {
@@ -241,17 +245,11 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         var visionEst = limelight.getEstimatedGlobalPose();
-        visionEst.ifPresent(
-                est -> {
-                    var estPose = est.estimatedPose.toPose2d();
-                    // Change our trust in the measurement based on the tags we can see
-                    var estStdDevs = limelight.getEstimationStdDevs(estPose);
-    
-                    addVisionMeasurement(
-                            est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-        });
+        if (visionEst.tagCount >= 1){
+            addVisionMeasurement(
+                            visionEst.pose, visionEst.timestampSeconds);
+        };
 
-        
         poseEstimator.update(getRotation2d(), getModulePositions());
         field.setRobotPose(poseEstimator.getEstimatedPosition());     
 
@@ -307,8 +305,12 @@ public class SwerveSubsystem extends SubsystemBase{
         BR.switchIdleMode();
     }
 
+    public void offsetGyro(){
+        gyroOffset = getPose().getRotation().getDegrees() - getRotation2d().getDegrees();
+    }
+
     public void addVisionMeasurement(
-            Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
-        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
+            Pose2d visionMeasurement, double timestampSeconds) {
+        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
     }
 }

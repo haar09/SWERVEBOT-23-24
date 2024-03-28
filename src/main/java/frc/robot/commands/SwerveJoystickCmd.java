@@ -16,7 +16,7 @@ public class SwerveJoystickCmd extends Command{
     private final SwerveSubsystem swerveSubsystem;
     private final Supplier<Double> xSpdFunc, ySpdFunc, turnSpdFunc;
     private final Supplier<Boolean> fieldOrientedFunc, slowMode, boost;
-    private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+    private final SlewRateLimiter xLimiter, yLimiter, turningLimiter, xBoostLimiter, yBoostLimiter;
     
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunc, Supplier<Double> ySpdFunc, Supplier<Double> turnSpdFunc,
@@ -31,6 +31,8 @@ public class SwerveJoystickCmd extends Command{
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+        this.xBoostLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveBoostMaxAccelerationUnitsPerSecond);
+        this.yBoostLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveBoostMaxAccelerationUnitsPerSecond);
         addRequirements(swerveSubsystem);
     }
 
@@ -53,8 +55,12 @@ public class SwerveJoystickCmd extends Command{
 
         // rate limit for smooth acceleration
         if (boost.get()) {
-        xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveBoostSpeedMetersPerSecond;
-        ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveBoostSpeedMetersPerSecond;
+            if (Math.abs(xBoostLimiter.lastValue()) <= Math.abs(xSpeed)) {
+                xSpeed = xBoostLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveBoostSpeedMetersPerSecond;
+            }
+            if (Math.abs(yBoostLimiter.lastValue()) <= Math.abs(ySpeed)) {
+                ySpeed = yBoostLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveBoostSpeedMetersPerSecond;
+            }
         } else {
         xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
         ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;

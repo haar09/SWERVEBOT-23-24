@@ -42,7 +42,7 @@ import frc.robot.subsystems.SwerveSubsystem;
 
 public class RobotContainer {
   
-  private final SwerveSubsystem swerveSubsystem;
+  public final SwerveSubsystem swerveSubsystem;
   private final ShooterPivot shooterPivot = new ShooterPivot();
   private final LimeLight LimeLight;
   private final LEDSubsystem ledSubsystem;

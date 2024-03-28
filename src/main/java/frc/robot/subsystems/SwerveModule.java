@@ -7,7 +7,6 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -37,7 +36,8 @@ public class SwerveModule{
             driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
             turningMotor.setInverted(turningMotorReversed);
             turningMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-            
+            turningMotor.setSmartCurrentLimit(30);
+
             driveEncoder = driveMotor.getEncoder();
             turningEncoder = turningMotor.getEncoder();
 
