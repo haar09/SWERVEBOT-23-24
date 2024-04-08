@@ -5,9 +5,10 @@ import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.GlobalVariables;
 
 public class GoToSource extends Command{
     private Command pathCommand;
@@ -18,7 +19,7 @@ public class GoToSource extends Command{
 
     @Override
     public void initialize(){
-        if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
+        if (GlobalVariables.getInstance().alliance == Alliance.Red) {
                 targetPose = new Pose2d(2.64, 1, Rotation2d.fromDegrees(180));
         } else {
                 targetPose = new Pose2d(13.9, 1, Rotation2d.fromDegrees(0));

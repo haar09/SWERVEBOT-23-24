@@ -1,7 +1,8 @@
 package frc.robot.commands.AutoCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ColorSensor;
+import frc.robot.Constants.IntakextenderConstants;
+import frc.robot.GlobalVariables;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Intake;
 
@@ -9,12 +10,10 @@ public class IntakeIn extends Command{
     private final Intake intake;
     private final Extender extender;
     private boolean ending;
-    private final ColorSensor colorSensor;
 
-    public IntakeIn(Intake intake, Extender extender, ColorSensor colorSensor){
+    public IntakeIn(Intake intake, Extender extender){
         this.intake = intake;
         this.extender = extender;
-        this.colorSensor = colorSensor;
         addRequirements(intake);
     }
 
@@ -25,9 +24,9 @@ public class IntakeIn extends Command{
 
     @Override
     public void execute(){
-        if (!colorSensor.getSensor()) {
-        intake.setOutputPercentage(0.3);
-        extender.setOutputPercentage(0.4);
+        if (!GlobalVariables.getInstance().extenderFull) {
+        intake.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
+        extender.setOutputPercentage(IntakextenderConstants.kExtenderSpeed);
         } else {
             intake.setOutputPercentage(0);
             extender.setOutputPercentage(0);

@@ -1,71 +1,61 @@
 package frc.robot.subsystems;
 
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.LimelightHelpers;
-import frc.robot.Constants.DriveConstants;
-import java.util.ArrayList;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.GlobalVariables;
 
 public class LimeLight extends SubsystemBase{
-    private double tx, ty, ta;
-    private ArrayList<Double> m_targetList;
-    private final int MAX_ENTRIES = 50;
+    NetworkTable limelightTable = NetworkTableInstance.getDefault().getTable("limelight");
+
+    public static class PoseEstimate {
+        public Pose2d pose;
+        public double timestampSeconds;
+
+        public PoseEstimate(Pose2d pose, double timestampSeconds) {
+
+            this.pose = pose;
+            this.timestampSeconds = timestampSeconds;        }
+    }
 
     public LimeLight() {        
-        m_targetList = new ArrayList<Double>(MAX_ENTRIES);
-
-        SmartDashboard.putBoolean("Limelight Target", LimelightHelpers.getTV("limelight"));
+        GlobalVariables.getInstance().isDetected(isTargetValid(), 0);
     }
 
     @Override
     public void periodic(){
-        if (LimelightHelpers.getTV("limelight")) {
-            tx = LimelightHelpers.getTX("limelight");
-            ty = LimelightHelpers.getTY("limelight");
-            ta = LimelightHelpers.getTA("limelight");
-            m_targetList.add(ta);
+        GlobalVariables.getInstance().isDetected(isTargetValid(), 0);
+    }
+
+    public PoseEstimate getEstimatedGlobalPose() {
+        var poseEntry = limelightTable.getEntry("botpose_wpiblue");
+
+        var botposeArray = poseEntry.getDoubleArray(new double[0]);
+        
+        try {
+        var timestamp = (poseEntry.getLastChange() / 1000000.0) - (botposeArray[6]/1000.0);
+
+        return new PoseEstimate(
+            new Pose2d(
+                new Translation2d(botposeArray[0], botposeArray[1]),
+                new Rotation2d(Math.toRadians(botposeArray[5]))
+            ),
+            timestamp);
+        } catch (Exception e) {
+            return new PoseEstimate(
+            new Pose2d(
+                new Translation2d(0,0),
+                new Rotation2d(Math.toRadians(0))
+            ),
+            0);
         }
-
-        SmartDashboard.putBoolean("Limelight Target", LimelightHelpers.getTV("limelight"));
-
-        if (m_targetList.size() >= MAX_ENTRIES) {
-            m_targetList.remove(0);
-        }
-    }
-
-    public LimelightHelpers.PoseEstimate getEstimatedGlobalPose() {
-        return LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-    }
-
-    public Translation3d cameraToTarget() {
-        return LimelightHelpers.getTargetPose3d_CameraSpace("limelight").getTranslation();
-    }
-
-    public double getTargetID() {
-        return LimelightHelpers.getFiducialID("limelight");
-    }
-
-    public double getTXwithOffset() {
-        Math.atan(DriveConstants.kSagSolArasi/2 / Math.hypot(cameraToTarget().getX(), cameraToTarget().getY()));
-
-        return tx;
-    }
-
-    public double getTY() {
-        return ty;
-    }
-    
-    public double getTA() {
-        double sum = 0;
-    
-        for (Double num : m_targetList) { 		      
-          sum += num.doubleValue();
-        }
-        return sum/m_targetList.size();
     }
 
     public boolean isTargetValid() {
-        return LimelightHelpers.getTV("limelight"); 
+        return limelightTable.getEntry("tv").getDouble(0) == 1; 
     }
 }

@@ -4,6 +4,10 @@
 
 package frc.robot;
 
+import org.apache.commons.math3.analysis.UnivariateFunction;
+import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
+import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
+
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -50,9 +54,9 @@ public final class Constants {
     public static final int kBRDriveMotorPort = 13;
 
     public static final int kFLTurningMotorPort = 4;
-    public static final int kBLTurningMotorPort = 8;
+    public static final int kBLTurningMotorPort = 11;
     public static final int kFRTurningMotorPort = 62;
-    public static final int kBRTurningMotorPort = 2;
+    public static final int kBRTurningMotorPort = 12;
 
     public static final boolean kFLTurningEncoderReversed = true;
     public static final boolean kBLTurningEncoderReversed = true;
@@ -78,10 +82,9 @@ public final class Constants {
     public static final double kPhysicalMaxSpeedMetersPerSecond = 4.8;
 
     public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.65;
-    public static final double kTeleDriveBoostSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.9;
+    public static final double kTeleDriveBoostSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.95;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2 / 1.66;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
-    public static final double kTeleDriveBoostMaxAccelerationUnitsPerSecond = 1.5;
     public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
 
     public static final double kTeleDriveSlowModeMultiplier = (1.0/8.0);
@@ -98,27 +101,46 @@ public final class Constants {
   }
 
   public static class OIConstants {
-    public static final double kDeadband = 0.12;
+    public static final double kDeadband = 0.3;
   }
 
   public static class VisionConstants {
-    public static final double kLimeLightMountAngleRadians = Math.toRadians(-30);
+    public static final double kLimeLightMountAngleRadians = Math.toRadians(30);
     public static final double kLimeLightHeightMeters = 0.26;
 
-    public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(0.294428, 0.184428, kLimeLightHeightMeters), new Rotation3d(0, kLimeLightMountAngleRadians, 0));
+    public static final Transform3d kRobotToLimelight =
+                new Transform3d(new Translation3d(0.294428, 0.184428, kLimeLightHeightMeters),
+                                new Rotation3d(0, kLimeLightMountAngleRadians, 0)
+                                );
+    public static final Transform3d kRobotToCam1 = //OV9281 001
+                new Transform3d(new Translation3d(-0.070937, 0.264048, 0.212),
+                                new Rotation3d(0, Math.toRadians(-28.1), Math.toRadians(150))
+                                );
+    public static final Transform3d kRobotToCam2 = //OV9281 002
+                new Transform3d(new Translation3d(-0.070937, -0.264048, 0.212),
+                                new Rotation3d(0, Math.toRadians(-28.1), Math.toRadians(-150))
+                                );
+
     public static final AprilTagFieldLayout kTagLayout =
                 AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
-    public static final Matrix<N3, N1> kTagStdDevs = VecBuilder.fill(4, 4, 1);
+    public static final double x_DistanceToSpeaker[] = {0   , 1.3 , 1.5 , 2   , 2.5 , 3   , 3.2 , 100000};
+    public static final double y_ArmAngle[] =          {29  , 29  , 22  , 14.5, 6.65, 2.5 , 0   , 0};
+    public static final UnivariateInterpolator angleInterpolator = new SplineInterpolator();
+    public static final UnivariateFunction angleFunction = angleInterpolator.interpolate(x_DistanceToSpeaker, y_ArmAngle);
+
+    public static final Matrix<N3, N1> kLimelightStdDevs = VecBuilder.fill(4, 4, 1);
+
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.3, 0.3, 1);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.15, 0.15, 1);
   }
 
   public static class PIDConstants{
     public static final double kPTurning = 0.45;
     public static final double kDTurning = 0.001;
 
-    public static final double kPLimeLightRotate = 0.034;
-    public static final double kDLimeLightRotate = 0;
+    public static final double kPLimeLightRotate = 0.075;
+    public static final double kDLimeLightRotate = 0.00001;
 
     public static final double kP180Rotate = 0.045;
     public static final double kD180Rotate = 0.00001;
@@ -131,10 +153,10 @@ public final class Constants {
     public static final float kMinShooterAngle = 0;
     public static final float kMaxShooterAngle = 39;
 
-    public static final int kPivotMotorId = 11;
+    public static final int kPivotMotorId = 3;
     public static final int kAbsoluteEncoderId = 54;
 
-    public static final double kAbsoluteEncoderOffset = -0.028320;
+    public static final double kAbsoluteEncoderOffset = 0.002930;
     public static final boolean kPivotMotorReversed = true;
 
     public static final double kAngleP = 1;
@@ -142,37 +164,43 @@ public final class Constants {
     public static final double kAngleD = 0;
     public static final double kAngleToleranceRad = Math.toRadians(0.05);
 
-    public static final double k0mAngle = 26; //26
-    public static final double k05mAngle = 20.1; //20.1
-    public static final double k1mAngle = 14; //14
-    public static final double k15mAngle = 7; //7
-    public static final double k2mAngle = 4.4; //4.4 
-    public static final double k25mAngle = 0.9; //0.9
-
     ////////////////////////////////////////////////////////////////////////////////
     
     
-    public static final int kShooterMotorLeftId = 1;
-    public static final int kShooterMotorRightId = 3;    
+    public static final int kShooterMotorLeftId = 7;
+    public static final int kShooterMotorRightId = 8;    
   
     public static final boolean kShooterMotorLeftReversed = false;
     public static final boolean kShooterMotorRightReversed = true; 
   
     public static final double kSpeakerSpeedLeft = 0.9;
-    public static final double kSpeakerSpeedRight = 0.6;
+    public static final double kSpeakerSpeedRight = 0.75;
 
-    public static final double kAmpSpeedLeft = 0.50;
-    public static final double kAmpSpeedRight = 0.50;
+    public static final double kAmpSpeedLeft = 0.38;
+    public static final double kAmpSpeedRight = 0.38;
+    
+    public static final double kVoltageCompensation = 10;
   }
 
   public static class IntakextenderConstants{
     public static final int kIntakeMotorId = 10;
     public static final boolean kIntakeMotorReversed = false;
-    public static final double kIntakeMotorSpeed = 0.5;
+    public static final double kIntakeMotorSpeed = 0.65;
     public static final double kIntakeDeadband = 0.3;
 
 
-    public static final int kExtenderMotorId = 6;
+    public static final int kExtenderMotorId = 2;
     public static final boolean kExtenderMotorReversed = false;
+    public static final double kExtenderSpeed = 0.11;
+    public static final double kExtenderBackSpeed = 0.3;
+  }
+
+  public static class ClimbConstants{
+    public static final int kAmpMechanismMotorId = 6;
+    public static final boolean kAmpMechanismMotorReversed = false;
+    public static final double kAmpMechanismMotorMultiplier = 0.5;
+
+    public static final int kClimbMotorId = 1;
+    public static final boolean kClimbMotorReversed = true;
   }
 } 

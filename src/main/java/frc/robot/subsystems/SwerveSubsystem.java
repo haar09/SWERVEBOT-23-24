@@ -6,6 +6,7 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,10 +16,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -73,10 +77,11 @@ public class SwerveSubsystem extends SubsystemBase{
     private GenericEntry resetNavXEntry;
     public final SwerveDrivePoseEstimator poseEstimator;
     private final LimeLight limelight;
+    private final OV9281 ov9281;
     public double speakerDistance;
-    public double kSpeakerPose;
+    public Translation2d kSpeakerApriltagPose;
 
-    public SwerveSubsystem(LimeLight m_limeLight) {
+    public SwerveSubsystem(LimeLight m_limeLight, OV9281 m_camera) {
         new Thread (() -> {
             while (true) {
                 if (gyro.isConnected()) {
@@ -129,10 +134,8 @@ public class SwerveSubsystem extends SubsystemBase{
                 stateStdDevs,
                 visionStdDevs);
 
-        poseEstimator.setVisionMeasurementStdDevs(VisionConstants.kTagStdDevs);
-
-
         limelight = m_limeLight;
+        ov9281 = m_camera;
 
         resetEncoders();
 
@@ -181,7 +184,7 @@ public class SwerveSubsystem extends SubsystemBase{
     public double gyroOffset = 0;
 
     public double getHeading() {
-        return gyro.getYaw() * -1 + gyroOffset;
+        return gyro.getYaw() * -1 ;
     }
 
     public Rotation2d getRotation2d() {
@@ -245,10 +248,30 @@ public class SwerveSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         var visionEst = limelight.getEstimatedGlobalPose();
-        if (visionEst.tagCount >= 1){
+        if (limelight.isTargetValid()){
             addVisionMeasurement(
-                            visionEst.pose, visionEst.timestampSeconds);
+                            visionEst.pose, visionEst.timestampSeconds, VisionConstants.kLimelightStdDevs);
         };
+
+        var visionEst1 = ov9281.getEstimatedGlobalPose1();
+        visionEst1.ifPresent(
+                est1 -> {
+                    var estPose1 = est1.estimatedPose.toPose2d();
+                    var estStdDevs1 = ov9281.getEstimationStdDevs1(estPose1);
+    
+                    addVisionMeasurement(
+                            est1.estimatedPose.toPose2d(), est1.timestampSeconds, estStdDevs1);
+        });
+
+        var visionEst2 = ov9281.getEstimatedGlobalPose2();
+        visionEst2.ifPresent(
+                est2 -> {
+                    var estPose2 = est2.estimatedPose.toPose2d();
+                    var estStdDevs2 = ov9281.getEstimationStdDevs2(estPose2);
+    
+                    addVisionMeasurement(
+                            est2.estimatedPose.toPose2d(), est2.timestampSeconds, estStdDevs2);
+        });
 
         poseEstimator.update(getRotation2d(), getModulePositions());
         field.setRobotPose(poseEstimator.getEstimatedPosition());     
@@ -258,41 +281,17 @@ public class SwerveSubsystem extends SubsystemBase{
             resetNavXEntry.setBoolean(false);
         }
 
-        if (DriverStation.getAlliance().isPresent()) {
-            if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-                kSpeakerPose = 15.655;
+        if (GlobalVariables.getInstance().alliance != null) {
+            if (GlobalVariables.getInstance().alliance == Alliance.Red) {
+                kSpeakerApriltagPose = VisionConstants.kTagLayout.getTagPose(4).get().getTranslation().toTranslation2d();
             } else {
-                kSpeakerPose = 0.885;
+                kSpeakerApriltagPose = VisionConstants.kTagLayout.getTagPose(7).get().getTranslation().toTranslation2d();
             }
         } else {
-                kSpeakerPose = 1000;
+                kSpeakerApriltagPose = new Translation2d(1000,1000);
         }
-        double y = Math.abs(getPose().getY() - 5.55);
-        if (y<0.5) {
-            y = 0;
-        }
-        speakerDistance = Math.hypot(
-            Math.abs(getPose().getX() - kSpeakerPose),
-            y
-        )-0.42;
 
-        /*if (DriverStation.getAlliance().isPresent()) {
-            if (DriverStation.getAlliance().get() == DriverStation.Alliance.Red) {
-                kSpeakerPose = 1;
-            } else {
-                kSpeakerPose = -0.038;
-            }
-        } else {
-                kSpeakerPose = 1000;
-        }
-        double y = Math.abs(getPose().getY() - 5.55);
-        if (y<0.3) {
-            y = 0;
-        }
-        speakerDistance = Math.hypot(
-            Math.abs(getPose().getX() - kSpeakerPose),
-            y
-        )-0.42;*/
+        speakerDistance = kSpeakerApriltagPose.minus(getPose().getTranslation()).getNorm();
 
         GlobalVariables.getInstance().speakerDistance = speakerDistance;
         SmartDashboard.putNumber("speakerDistance", speakerDistance);    
@@ -306,11 +305,12 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     public void offsetGyro(){
-        gyroOffset = getPose().getRotation().getDegrees() - getRotation2d().getDegrees();
+        System.out.println(getPose().getRotation().getDegrees());
+        gyroOffset = getPose().getRotation().getDegrees();
     }
 
     public void addVisionMeasurement(
-            Pose2d visionMeasurement, double timestampSeconds) {
-        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds);
+            Pose2d visionMeasurement, double timestampSeconds, Matrix<N3, N1> stdDevs) {
+        poseEstimator.addVisionMeasurement(visionMeasurement, timestampSeconds, stdDevs);
     }
 }

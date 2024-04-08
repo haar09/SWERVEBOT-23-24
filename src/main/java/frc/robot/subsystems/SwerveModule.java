@@ -34,9 +34,10 @@ public class SwerveModule{
 
             driveMotor.setInverted(driveMotorReversed);
             driveMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            driveMotor.setSmartCurrentLimit(30);
             turningMotor.setInverted(turningMotorReversed);
             turningMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
-            turningMotor.setSmartCurrentLimit(30);
+            turningMotor.setSmartCurrentLimit(20);
 
             driveEncoder = driveMotor.getEncoder();
             turningEncoder = turningMotor.getEncoder();
@@ -110,7 +111,9 @@ public class SwerveModule{
         }
         
         state = SwerveModuleState.optimize(state, getState().angle);
-        driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
+        driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond
+        * Math.cos(Math.abs(getTurningPosition()-state.angle.getRadians()))
+        );
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
     }
 

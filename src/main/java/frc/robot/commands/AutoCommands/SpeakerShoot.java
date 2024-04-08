@@ -3,6 +3,7 @@ package frc.robot.commands.AutoCommands;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
+import frc.robot.Constants.IntakextenderConstants;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.Shooter;
@@ -45,8 +46,8 @@ public class SpeakerShoot extends Command{
             ledSubsystem.setColor(0, 0, 255);
             if (shooter.state == ShooterState.READY) {
                 start = Timer.getFPGATimestamp();
-                while (Timer.getFPGATimestamp() - start < 0.15) {
-                    extender.setOutputPercentage(-0.5);
+                while (Timer.getFPGATimestamp() - start < 0.05) {
+                    extender.setOutputPercentage(-IntakextenderConstants.kExtenderBackSpeed);
                     m_ShooterPivot.setDesiredAngle(desiredAngle);
                 }
                 while (Timer.getFPGATimestamp() - start < 1.1) {

@@ -1,10 +1,13 @@
-package frc.robot.commands.ShootCommands;
+package frc.robot.commands;
 
 import java.util.function.Supplier;
 
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.IntakextenderConstants;
 import frc.robot.subsystems.Extender;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -15,13 +18,16 @@ public class ShooterShoot extends Command{
     private final Shooter shooter;
     private final Extender extender;
     private final Intake intake;
-    private boolean ending;
+    private boolean ending, amp;
+    private final XboxController operatorController;
 
-    public ShooterShoot(Supplier<Double> rightTrigger ,Shooter shooter, Intake intake,Extender extender){
+    public ShooterShoot(Supplier<Double> rightTrigger ,Shooter shooter, Intake intake,Extender extender, Boolean amp, XboxController operatorController){
         this.shooter = shooter;
         this.extender = extender;
         this.intake = intake;
         this.rightTrigger = rightTrigger;
+        this.amp = amp;
+        this.operatorController = operatorController;
         ending = false;
         addRequirements(shooter, extender); 
     }
@@ -46,25 +52,44 @@ public class ShooterShoot extends Command{
     @Override
     public void execute() {
         double timeElapsed = Timer.getFPGATimestamp() - startTime;
-        shooter.setSpeakerSpeed();
+        if (amp) {
+            shooter.setAmpSpeed();
+        } else {
+            shooter.setSpeakerSpeed();
+        }
 
         switch (state) {
             case START:
-                if (rightTrigger.get() > 0.3 && shooter.state == ShooterState.READY) {
-                    startTime = Timer.getFPGATimestamp();
-                    state = State.EXTEND;
+                if (shooter.state == ShooterState.READY) {
+                    if (rightTrigger.get() > 0.3) {
+                        operatorController.setRumble(RumbleType.kBothRumble, 0);
+                        startTime = Timer.getFPGATimestamp();
+                        state = State.EXTEND;
+                    } else {
+                        operatorController.setRumble(RumbleType.kBothRumble, 0.5);
+                    }
+                } else {
+                    if (rightTrigger.get() > 0.3) {
+                        operatorController.setRumble(RumbleType.kRightRumble, 1);
+                    } else { 
+                        operatorController.setRumble(RumbleType.kBothRumble, 0);
+                    }
                 }
                 break;
             case EXTEND:
-                if (timeElapsed < 0.15) {
-                    extender.setOutputPercentage(-0.5);
+                if (timeElapsed < 0.1) {
+                    extender.setOutputPercentage(-IntakextenderConstants.kExtenderBackSpeed);
                 } else {
                     state = State.SHOOT;
                 }
                 break;
             case SHOOT:
                 if (timeElapsed < 1.3) {
-                    shooter.setSpeakerSpeed();
+                    if (amp) {
+                        shooter.setAmpSpeed();
+                    } else {
+                        shooter.setSpeakerSpeed();
+                    }
                     extender.setOutputPercentage(1);
                     intake.setOutputPercentage(0.6);
                 } else {

@@ -59,8 +59,8 @@ public class RobotContainer {
   private final AmpMechanism ampMechanism;
   private final Climb climb;
 
-  public static final XboxController driverJoystick = new XboxController(0);
-  public static final XboxController operatorJoystick = new XboxController(1);
+  public static final PS4Controller driverJoystick = new PS4Controller(0);
+  public static final PS4Controller operatorJoystick = new PS4Controller(1);
 
   private final SendableChooser<Command> autoChooser;
 
@@ -82,9 +82,9 @@ public class RobotContainer {
     climb = new Climb();
 
     intake.setDefaultCommand(new IntakeCmd(        
-      () -> driverJoystick.getRightTriggerAxis() > IntakextenderConstants.kIntakeDeadband,
-      () -> driverJoystick.getLeftTriggerAxis() > IntakextenderConstants.kIntakeDeadband,
-      () -> driverJoystick.getRawButton(1), // bu x
+      () -> driverJoystick.getRawButton(8),
+      () -> driverJoystick.getRawButton(7),
+      () -> driverJoystick.getRawButton(2), // bu x
       intake,
       extender,
       driverJoystick
@@ -95,10 +95,10 @@ public class RobotContainer {
         swerveSubsystem,
         () -> -driverJoystick.getRawAxis(1),
         () -> -driverJoystick.getRawAxis(0),
-        () -> -driverJoystick.getRawAxis(4), 
-        () -> !driverJoystick.getLeftBumper(), // bu L1
-        () -> !driverJoystick.getRightBumper(), // bu R1
-        () -> driverJoystick.getLeftStickButton() // bu L3
+        () -> -driverJoystick.getRawAxis(2), 
+        () -> !driverJoystick.getRawButton(5), // bu L1
+        () -> !driverJoystick.getRawButton(6), // bu R1
+        () -> driverJoystick.getRawButton(11) // bu L3
       )
     );
     
@@ -133,30 +133,29 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new JoystickButton(driverJoystick, 8).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //ps butonu
+    new JoystickButton(driverJoystick, 13).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //ps butonu
 
     new POVButton(driverJoystick, 0).whileTrue(new GoToSpeaker()); // yukarı ok
     new POVButton(driverJoystick, 180).whileTrue(new GoToSource()); // aşağı ok
     new POVButton(driverJoystick, 90).whileTrue(new GoToAmp()); // sağ ok
     new POVButton(driverJoystick, 270).whileTrue(new GoToAmp()); // sol ok
 
-    new JoystickButton(driverJoystick, 2).whileTrue(new RotateToNoteWhileDrive(objectDetection, driverJoystick)); // bu daire
-    new JoystickButton(driverJoystick, 3).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare
+    new JoystickButton(driverJoystick, 3).whileTrue(new RotateToNoteWhileDrive(objectDetection, driverJoystick)); // bu daire
+    new JoystickButton(driverJoystick, 1).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare
     new JoystickButton(driverJoystick, 4).onTrue(new Degree180Turn(swerveSubsystem)); // bu üçgen
 
-    new JoystickButton(operatorJoystick, 2).whileTrue(new RotateToTargetWhileDrive(swerveSubsystem, operatorJoystick)); // daire
-    new POVButton(operatorJoystick, 270).whileTrue(new RotateToTargetWhileDrive(swerveSubsystem, operatorJoystick)); // daire
+    new JoystickButton(operatorJoystick, 3).whileTrue(new RotateToTargetWhileDrive(swerveSubsystem, operatorJoystick)); // daire
 
     new JoystickButton(operatorJoystick, 6).whileTrue(new ShooterShoot(
-      () -> operatorJoystick.getRawAxis(3),
+      () -> operatorJoystick.getRawAxis(4),
       shooter, intake, extender, false, operatorJoystick)); //r1 ve r2
 
     new JoystickButton(operatorJoystick, 5).whileTrue(new ShooterShoot(
-      () -> operatorJoystick.getRawAxis(3),
+      () -> operatorJoystick.getRawAxis(4),
       shooter, intake, extender, true, operatorJoystick)); //r1 ve r2
     
-    new JoystickButton(operatorJoystick, 3).whileTrue(new AmpAngle(shooterPivot)); // kare
-    new JoystickButton(operatorJoystick, 1).whileTrue(new ShooterSetAngle(shooterPivot)); // x
+    new JoystickButton(operatorJoystick, 1).whileTrue(new AmpAngle(shooterPivot)); // kare
+    new JoystickButton(operatorJoystick, 2).whileTrue(new ShooterAngle(shooterPivot)); // x
     new JoystickButton(operatorJoystick, 4).whileTrue(new ShooterAutoAngle(shooterPivot)); // üçgen
   }
 

@@ -1,10 +1,8 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.CANSparkMax;
-//import com.revrobotics.SparkPIDController;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkBase.IdleMode;
-
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,14 +11,11 @@ import frc.robot.GlobalVariables;
 
 public class Shooter extends SubsystemBase{
 
-    private final CANSparkMax leftMotor;
-    private final CANSparkMax rightMotor;
+    private final TalonFX leftMotor;
+    private final VoltageOut leftMotorVoltageRequest;
 
-    private final RelativeEncoder leftEncoder;
-    private final RelativeEncoder rightEncoder;
-
-    /*private final SparkPIDController leftPidController;
-    private final SparkPIDController rightPidController;*/
+    private final TalonFX rightMotor;
+    private final VoltageOut rightMotorVoltageRequest;
 
     private final LEDSubsystem ledSubsystem;
 
@@ -30,23 +25,17 @@ public class Shooter extends SubsystemBase{
     public Shooter(LEDSubsystem m_LedSubsystem) {
         ledSubsystem = m_LedSubsystem;
 
-        leftMotor = new CANSparkMax(ShooterConstants.kShooterMotorLeftId, CANSparkMax.MotorType.kBrushless);
-        rightMotor = new CANSparkMax(ShooterConstants.kShooterMotorRightId, CANSparkMax.MotorType.kBrushless);
+        leftMotor = new TalonFX(ShooterConstants.kShooterMotorLeftId);
+        rightMotor = new TalonFX(ShooterConstants.kShooterMotorRightId);
 
-        leftMotor.setIdleMode(IdleMode.kCoast);
-        rightMotor.setIdleMode(IdleMode.kCoast);
-
-        leftEncoder = leftMotor.getEncoder();
-        rightEncoder = rightMotor.getEncoder();
+        leftMotor.setNeutralMode(NeutralModeValue.Coast);
+        rightMotor.setNeutralMode(NeutralModeValue.Coast);
 
         leftMotor.setInverted(ShooterConstants.kShooterMotorLeftReversed);
         rightMotor.setInverted(ShooterConstants.kShooterMotorRightReversed);
 
-        leftMotor.enableVoltageCompensation(10.9);
-        rightMotor.enableVoltageCompensation(10.9);
-
-        leftMotor.burnFlash();
-        rightMotor.burnFlash();
+        leftMotorVoltageRequest = new VoltageOut(0);
+        rightMotorVoltageRequest = new VoltageOut(0);
 
         ledIdle = true;
     }
@@ -64,15 +53,15 @@ public class Shooter extends SubsystemBase{
         switch (state) {
             case IDLE:
                 SmartDashboard.putBoolean("shooterReady", false);
-                ledIdle = false;    
-                leftMotor.set(ShooterConstants.kSpeakerSpeedLeft);
-                rightMotor.set(ShooterConstants.kSpeakerSpeedRight);
+                ledIdle = false;
+                leftMotor.setControl(leftMotorVoltageRequest.withOutput((ShooterConstants.kSpeakerSpeedLeft * ShooterConstants.kVoltageCompensation)));
+                rightMotor.setControl(rightMotorVoltageRequest.withOutput((ShooterConstants.kSpeakerSpeedRight * ShooterConstants.kVoltageCompensation)));
                 startTime = Timer.getFPGATimestamp();
                 state = ShooterState.ACCELERATING; 
                 ledSubsystem.setColor(0, 0, 0);
                 break;
             case ACCELERATING:
-                if (leftEncoder.getVelocity() >= 4100 && rightEncoder.getVelocity() >= 2400) {
+                if (leftMotor.getVelocity().getValueAsDouble() >= 72 && rightMotor.getVelocity().getValueAsDouble() >= 60) {
                     ledSubsystem.setColor(0, 255, 0);
                     SmartDashboard.putBoolean("shooterReady", true);
                     state = ShooterState.READY;
@@ -82,8 +71,8 @@ public class Shooter extends SubsystemBase{
                 }
             break;
             case READY:
-                leftMotor.set(ShooterConstants.kSpeakerSpeedLeft);
-                rightMotor.set(ShooterConstants.kSpeakerSpeedRight);
+                leftMotor.setControl(leftMotorVoltageRequest.withOutput(ShooterConstants.kSpeakerSpeedLeft * ShooterConstants.kVoltageCompensation));
+                rightMotor.setControl(rightMotorVoltageRequest.withOutput(ShooterConstants.kSpeakerSpeedRight * ShooterConstants.kVoltageCompensation));
                 break;
         }
     }
@@ -93,13 +82,13 @@ public class Shooter extends SubsystemBase{
             case IDLE:
                 SmartDashboard.putBoolean("shooterReady", false);
                 ledIdle = false;    
-                leftMotor.set(ShooterConstants.kAmpSpeedLeft);
-                rightMotor.set(ShooterConstants.kAmpSpeedRight);
+                leftMotor.setControl(leftMotorVoltageRequest.withOutput((ShooterConstants.kAmpSpeedLeft * ShooterConstants.kVoltageCompensation)));
+                rightMotor.setControl(rightMotorVoltageRequest.withOutput((ShooterConstants.kAmpSpeedRight * ShooterConstants.kVoltageCompensation)));
                 startTime = Timer.getFPGATimestamp();
                 state = ShooterState.ACCELERATING; 
                 break;
             case ACCELERATING:
-                if (leftEncoder.getVelocity() >= 2000 && rightEncoder.getVelocity() >= 2000) {
+                if (leftMotor.getVelocity().getValueAsDouble() >= 27 && rightMotor.getVelocity().getValueAsDouble() >= 26) {
                     ledSubsystem.setColor(0, 255, 0);
                     SmartDashboard.putBoolean("shooterReady", true);
                     state = ShooterState.READY;
@@ -109,22 +98,22 @@ public class Shooter extends SubsystemBase{
                 }
             break;
             case READY:
-                leftMotor.set(ShooterConstants.kAmpSpeedLeft);
-                rightMotor.set(ShooterConstants.kAmpSpeedRight);
+                leftMotor.setControl(leftMotorVoltageRequest.withOutput(ShooterConstants.kAmpSpeedLeft * ShooterConstants.kVoltageCompensation));
+                rightMotor.setControl(rightMotorVoltageRequest.withOutput((ShooterConstants.kAmpSpeedRight * ShooterConstants.kVoltageCompensation)));
                 break;
         }
     }
 
     public void stopShooter() {
-        leftMotor.set(0);
-        rightMotor.set(0);
+        leftMotor.setControl(leftMotorVoltageRequest.withOutput(0));
+        rightMotor.setControl(leftMotorVoltageRequest.withOutput(0));
         ledIdle = true;
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("leftSpeed", leftEncoder.getVelocity());
-        SmartDashboard.putNumber("rightSpeed", rightEncoder.getVelocity());
+        SmartDashboard.putNumber("leftSpeed", leftMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("rightSpeed", rightMotor.getVelocity().getValueAsDouble());
         if (ledIdle) {
             if (GlobalVariables.getInstance().extenderFull) {
                 ledSubsystem.rainbowMode = false;

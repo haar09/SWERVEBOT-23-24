@@ -10,6 +10,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.VisionConstants;
 
 public class ShooterPivot extends SubsystemBase{
     
@@ -38,7 +39,7 @@ public class ShooterPivot extends SubsystemBase{
         anglePidController.setTolerance(ShooterConstants.kAngleToleranceRad);
         anglePidController.enableContinuousInput(-Math.PI, Math.PI);
 
-        SmartDashboard.putNumber("customAngle", 30);
+        SmartDashboard.putNumber("customAngle", VisionConstants.y_ArmAngle[0]);
 
         resetEncoders();
     }

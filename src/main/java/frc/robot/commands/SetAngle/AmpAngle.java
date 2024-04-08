@@ -17,7 +17,7 @@ public class AmpAngle extends Command{
 
     @Override
     public void execute() {
-        m_ShooterPivot.setDesiredAngle(30);
+        m_ShooterPivot.setDesiredAngle(22);
     }
 
     public void end(boolean interrupted) {
