@@ -14,7 +14,7 @@ public class RotateToNoteWhileDrive extends Command{
     private ObjectDetection detector;
     private XboxController driverController;
     
-     PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, PIDConstants.kDLimeLightRotate);
+     PIDController thetaController = new PIDController(PIDConstants.kPObjectRotate, 0, PIDConstants.kDObjectRotate);
 
     public RotateToNoteWhileDrive(ObjectDetection objectDetector, XboxController driverController){
         this.detector = objectDetector;

@@ -141,10 +141,11 @@ public class RobotContainer {
     new POVButton(driverJoystick, 270).whileTrue(new GoToAmp()); // sol ok
 
     new JoystickButton(driverJoystick, 2).whileTrue(new RotateToNoteWhileDrive(objectDetection, driverJoystick)); // bu daire
+    new JoystickButton(operatorJoystick, 2).whileTrue(new RotateToNoteWhileDrive(objectDetection, driverJoystick)); // bu daire
+
     new JoystickButton(driverJoystick, 3).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare
     new JoystickButton(driverJoystick, 4).onTrue(new Degree180Turn(swerveSubsystem)); // bu üçgen
 
-    new JoystickButton(operatorJoystick, 2).whileTrue(new RotateToTargetWhileDrive(swerveSubsystem, operatorJoystick)); // daire
     new POVButton(operatorJoystick, 270).whileTrue(new RotateToTargetWhileDrive(swerveSubsystem, operatorJoystick)); // daire
 
     new JoystickButton(operatorJoystick, 6).whileTrue(new ShooterShoot(

@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.9453667998245088,
-        "y": 3.7967995935991876
+        "x": 2.2,
+        "y": 3.6
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.8297734777287737,
-        "y": 1.1567644953471727
+        "x": 4.084406677904266,
+        "y": 0.9599649017479852
       },
       "isLocked": false,
       "linkedName": "1stNote Far Shoot"
@@ -51,7 +51,7 @@
   "reversed": false,
   "folder": "2 Note from Distance",
   "previewStartingState": {
-    "rotation": 127.0,
+    "rotation": 143.0,
     "velocity": 0
   },
   "useDefaultConstraints": true

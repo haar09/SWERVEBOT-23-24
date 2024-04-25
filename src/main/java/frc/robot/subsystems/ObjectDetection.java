@@ -16,7 +16,7 @@ public class ObjectDetection extends SubsystemBase{
     private final int MAX_ENTRIES = 50;
 
     public ObjectDetection() {        
-        camera = new PhotonCamera("Logitech");
+        camera = new PhotonCamera("ar0234");
 
         result = camera.getLatestResult();
 

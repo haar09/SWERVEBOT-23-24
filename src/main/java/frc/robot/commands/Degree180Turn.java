@@ -24,7 +24,6 @@ public class Degree180Turn extends Command{
         targetAngle = currentAngle + 360;
         targetAngle %= 360;
         targetAngle -= 180;
-        System.out.println(targetAngle);
         startTime = Timer.getFPGATimestamp();
     }
 

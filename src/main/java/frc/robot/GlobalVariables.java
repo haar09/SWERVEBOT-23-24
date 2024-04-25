@@ -29,6 +29,9 @@ public class GlobalVariables {
     }
 
     public double speakerToAngle() {
+        if (DriverStation.isAutonomous()) {
+            speakerDistance += 0.07;
+        }
         if (speakerDistance < 1) {
             return (VisionConstants.y_ArmAngle[0]);   
         } else if (speakerDistance < 3.5) {

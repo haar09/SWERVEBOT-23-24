@@ -53,15 +53,14 @@ public class Shooter extends SubsystemBase{
         switch (state) {
             case IDLE:
                 SmartDashboard.putBoolean("shooterReady", false);
-                ledIdle = false;
                 leftMotor.setControl(leftMotorVoltageRequest.withOutput((ShooterConstants.kSpeakerSpeedLeft * ShooterConstants.kVoltageCompensation)));
                 rightMotor.setControl(rightMotorVoltageRequest.withOutput((ShooterConstants.kSpeakerSpeedRight * ShooterConstants.kVoltageCompensation)));
                 startTime = Timer.getFPGATimestamp();
                 state = ShooterState.ACCELERATING; 
-                ledSubsystem.setColor(0, 0, 0);
                 break;
             case ACCELERATING:
                 if (leftMotor.getVelocity().getValueAsDouble() >= 72 && rightMotor.getVelocity().getValueAsDouble() >= 60) {
+                    ledIdle = false;
                     ledSubsystem.setColor(0, 255, 0);
                     SmartDashboard.putBoolean("shooterReady", true);
                     state = ShooterState.READY;
@@ -88,7 +87,7 @@ public class Shooter extends SubsystemBase{
                 state = ShooterState.ACCELERATING; 
                 break;
             case ACCELERATING:
-                if (leftMotor.getVelocity().getValueAsDouble() >= 27 && rightMotor.getVelocity().getValueAsDouble() >= 26) {
+                if (leftMotor.getVelocity().getValueAsDouble() >= 24 && rightMotor.getVelocity().getValueAsDouble() >= 24) {
                     ledSubsystem.setColor(0, 255, 0);
                     SmartDashboard.putBoolean("shooterReady", true);
                     state = ShooterState.READY;

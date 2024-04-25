@@ -81,7 +81,7 @@ public final class Constants {
     public static final double kPhysicalMaxAngularSpeedRadiansPerSecond = 2 * 2 * Math.PI;
     public static final double kPhysicalMaxSpeedMetersPerSecond = 4.8;
 
-    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.65;
+    public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.8;
     public static final double kTeleDriveBoostSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond * 0.95;
     public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = kPhysicalMaxAngularSpeedRadiansPerSecond / 2 / 1.66;
     public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
@@ -129,10 +129,10 @@ public final class Constants {
     public static final UnivariateInterpolator angleInterpolator = new SplineInterpolator();
     public static final UnivariateFunction angleFunction = angleInterpolator.interpolate(x_DistanceToSpeaker, y_ArmAngle);
 
-    public static final Matrix<N3, N1> kLimelightStdDevs = VecBuilder.fill(4, 4, 1);
+    public static final Matrix<N3, N1> kLimelightStdDevs = VecBuilder.fill(4, 4, 999999);
 
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.3, 0.3, 1);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.15, 0.15, 1);
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.5, 0.5, 8);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.25, 0.25, 3);
   }
 
   public static class PIDConstants{
@@ -141,6 +141,9 @@ public final class Constants {
 
     public static final double kPLimeLightRotate = 0.075;
     public static final double kDLimeLightRotate = 0.00001;
+
+    public static final double kPObjectRotate = 0.07;
+    public static final double kDObjectRotate = 0.0015;
 
     public static final double kP180Rotate = 0.045;
     public static final double kD180Rotate = 0.00001;
@@ -176,8 +179,8 @@ public final class Constants {
     public static final double kSpeakerSpeedLeft = 0.9;
     public static final double kSpeakerSpeedRight = 0.75;
 
-    public static final double kAmpSpeedLeft = 0.38;
-    public static final double kAmpSpeedRight = 0.38;
+    public static final double kAmpSpeedLeft = 0.35;
+    public static final double kAmpSpeedRight = 0.35;
     
     public static final double kVoltageCompensation = 10;
   }
