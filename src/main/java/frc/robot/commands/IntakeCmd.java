@@ -15,6 +15,7 @@ public class IntakeCmd extends Command{
     private final Extender extender;
     private final Supplier<Boolean> take, out, hard;
     private final XboxController driverController;
+    private boolean isIntaking;
 
     public IntakeCmd(Supplier<Boolean> take, Supplier<Boolean> out, Supplier<Boolean> hard,
     Intake intake, Extender extender, XboxController driverController){
@@ -25,6 +26,7 @@ public class IntakeCmd extends Command{
         this.extender = extender;
         this.driverController = driverController;
         addRequirements(intake);
+        isIntaking = false;
     }
 
     @Override
@@ -51,6 +53,7 @@ public class IntakeCmd extends Command{
                 }
             }
         } else if (outSpeed) {
+            isIntaking = false;
             if (hard.get()) {
                 intake.setOutputPercentage(-0.8);
                 extender.setOutputPercentage(-0.8);
@@ -59,12 +62,26 @@ public class IntakeCmd extends Command{
                 extender.setOutputPercentage(-IntakextenderConstants.kExtenderSpeed);
             }
 
-        }
-        else {
+        } else if (intake.intakeStart && !GlobalVariables.getInstance().extenderFull) {
+            isIntaking = true;
+            intake.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
+            extender.setOutputPercentage(IntakextenderConstants.kExtenderSpeed);
+
+        } else if (isIntaking){
+            if (GlobalVariables.getInstance().extenderFull) {
+                isIntaking = false;
+            } else {
+                intake.setOutputPercentage(IntakextenderConstants.kIntakeMotorSpeed);
+                extender.setOutputPercentage(IntakextenderConstants.kExtenderSpeed);
+            }
+
+        } else {
             driverController.setRumble(RumbleType.kBothRumble, 0);
             intake.setOutputPercentage(0);
             extender.setOutputPercentage(0);
+
         }
+
         if (GlobalVariables.getInstance().extenderFull && !outSpeed && !hard.get()) {
             intake.setOutputPercentage(0);
             extender.setOutputPercentage(0);

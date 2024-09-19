@@ -17,9 +17,8 @@ public class Shooter extends SubsystemBase{
     private final TalonFX rightMotor;
     private final VoltageOut rightMotorVoltageRequest;
 
-    private final LEDSubsystem ledSubsystem;
+    public final LEDSubsystem ledSubsystem;
 
-    public boolean ledIdle;
     public double time;
 
     public Shooter(LEDSubsystem m_LedSubsystem) {
@@ -36,8 +35,6 @@ public class Shooter extends SubsystemBase{
 
         leftMotorVoltageRequest = new VoltageOut(0);
         rightMotorVoltageRequest = new VoltageOut(0);
-
-        ledIdle = true;
     }
 
     public enum ShooterState {
@@ -57,13 +54,13 @@ public class Shooter extends SubsystemBase{
                 rightMotor.setControl(rightMotorVoltageRequest.withOutput((ShooterConstants.kSpeakerSpeedRight * ShooterConstants.kVoltageCompensation)));
                 startTime = Timer.getFPGATimestamp();
                 state = ShooterState.ACCELERATING; 
+                ledSubsystem.isAccelerating = true;
                 break;
             case ACCELERATING:
                 if (leftMotor.getVelocity().getValueAsDouble() >= 72 && rightMotor.getVelocity().getValueAsDouble() >= 60) {
-                    ledIdle = false;
-                    ledSubsystem.setColor(0, 255, 0);
                     SmartDashboard.putBoolean("shooterReady", true);
                     state = ShooterState.READY;
+                    ledSubsystem.isReady = true;
                 } else if (Timer.getFPGATimestamp() - startTime > 2) {
                     stopShooter();
                     state = ShooterState.IDLE;
@@ -72,6 +69,7 @@ public class Shooter extends SubsystemBase{
             case READY:
                 leftMotor.setControl(leftMotorVoltageRequest.withOutput(ShooterConstants.kSpeakerSpeedLeft * ShooterConstants.kVoltageCompensation));
                 rightMotor.setControl(rightMotorVoltageRequest.withOutput(ShooterConstants.kSpeakerSpeedRight * ShooterConstants.kVoltageCompensation));
+                ledSubsystem.isAccelerating = false;
                 break;
         }
     }
@@ -80,17 +78,17 @@ public class Shooter extends SubsystemBase{
         switch (state) {
             case IDLE:
                 SmartDashboard.putBoolean("shooterReady", false);
-                ledIdle = false;    
                 leftMotor.setControl(leftMotorVoltageRequest.withOutput((ShooterConstants.kAmpSpeedLeft * ShooterConstants.kVoltageCompensation)));
                 rightMotor.setControl(rightMotorVoltageRequest.withOutput((ShooterConstants.kAmpSpeedRight * ShooterConstants.kVoltageCompensation)));
                 startTime = Timer.getFPGATimestamp();
                 state = ShooterState.ACCELERATING; 
+                ledSubsystem.isAccelerating = true;
                 break;
             case ACCELERATING:
                 if (leftMotor.getVelocity().getValueAsDouble() >= 24 && rightMotor.getVelocity().getValueAsDouble() >= 24) {
-                    ledSubsystem.setColor(0, 255, 0);
                     SmartDashboard.putBoolean("shooterReady", true);
                     state = ShooterState.READY;
+                    ledSubsystem.isReady = true;
                 } else if (Timer.getFPGATimestamp() - startTime > 2) {
                     stopShooter();
                     state = ShooterState.IDLE;
@@ -99,33 +97,37 @@ public class Shooter extends SubsystemBase{
             case READY:
                 leftMotor.setControl(leftMotorVoltageRequest.withOutput(ShooterConstants.kAmpSpeedLeft * ShooterConstants.kVoltageCompensation));
                 rightMotor.setControl(rightMotorVoltageRequest.withOutput((ShooterConstants.kAmpSpeedRight * ShooterConstants.kVoltageCompensation)));
+                ledSubsystem.isAccelerating = false;
                 break;
         }
+    }
+
+    public void setSlowSpeed() {
+            leftMotor.setControl(leftMotorVoltageRequest.withOutput(ShooterConstants.kSpeakerSpeedLeft * 0.4 * ShooterConstants.kVoltageCompensation));
+            rightMotor.setControl(rightMotorVoltageRequest.withOutput(ShooterConstants.kSpeakerSpeedRight * 0.4 * ShooterConstants.kVoltageCompensation));
     }
 
     public void stopShooter() {
         leftMotor.setControl(leftMotorVoltageRequest.withOutput(0));
         rightMotor.setControl(leftMotorVoltageRequest.withOutput(0));
-        ledIdle = true;
+        ledSubsystem.isReady = false;
     }
 
     @Override
     public void periodic() {
         SmartDashboard.putNumber("leftSpeed", leftMotor.getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("rightSpeed", rightMotor.getVelocity().getValueAsDouble());
-        if (ledIdle) {
-            if (GlobalVariables.getInstance().extenderFull) {
-                ledSubsystem.rainbowMode = false;
-                if (GlobalVariables.getInstance().speakerToAngle() > 0) {
-                    ledSubsystem.setColor(0, 0, 255);
-                } else {
-                    ledSubsystem.setColor(222, 49, 0);
-                }
+        
+        if (GlobalVariables.getInstance().extenderFull) {
+            if (GlobalVariables.getInstance().speakerToAngle() > 0) {
+                ledSubsystem.isInRange = true;
             } else {
-                ledSubsystem.rainbowMode = true;
+                ledSubsystem.isInRange = false;
+                ledSubsystem.isNote = true;
             }
         } else {
-            ledSubsystem.rainbowMode = false;
+            ledSubsystem.isNote = false;
+            ledSubsystem.isInRange = false;
         }
     }
 

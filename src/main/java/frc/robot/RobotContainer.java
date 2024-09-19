@@ -20,8 +20,9 @@ import frc.robot.commands.AmpMechanismCmd;
 import frc.robot.commands.ClimbCmd;
 import frc.robot.commands.Degree180Turn;
 import frc.robot.commands.IntakeCmd;
-import frc.robot.commands.RotateToNoteWhileDrive;
+import frc.robot.commands.DriveToNote;
 import frc.robot.commands.RotateToTargetWhileDrive;
+import frc.robot.commands.ShooterAuto;
 import frc.robot.commands.ShooterShoot;
 import frc.robot.commands.SwerveJoystickCmd;
 import frc.robot.commands.AutoCommands.IntakeIn;
@@ -82,9 +83,9 @@ public class RobotContainer {
     climb = new Climb();
 
     intake.setDefaultCommand(new IntakeCmd(        
-      () -> driverJoystick.getRightTriggerAxis() > IntakextenderConstants.kIntakeDeadband,
       () -> driverJoystick.getLeftTriggerAxis() > IntakextenderConstants.kIntakeDeadband,
-      () -> driverJoystick.getRawButton(1), // bu x
+      () -> driverJoystick.getAButton(),
+      () -> driverJoystick.getXButton(),
       intake,
       extender,
       driverJoystick
@@ -98,7 +99,8 @@ public class RobotContainer {
         () -> -driverJoystick.getRawAxis(4), 
         () -> !driverJoystick.getLeftBumper(), // bu L1
         () -> !driverJoystick.getRightBumper(), // bu R1
-        () -> driverJoystick.getLeftStickButton() // bu L3
+        () -> driverJoystick.getLeftStickButton(), // bu L3
+        ledSubsystem
       )
     );
     
@@ -118,12 +120,12 @@ public class RobotContainer {
       operatorJoystick)
     );
 
-    NamedCommands.registerCommand("ShootToSpeakerAuto", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem, 0));
-    NamedCommands.registerCommand("ShootToSpeaker0m", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem, VisionConstants.y_ArmAngle[1]));
-    NamedCommands.registerCommand("ShootToSpeaker1m", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem, VisionConstants.y_ArmAngle[2]));
-    NamedCommands.registerCommand("ShootToSpeaker15m", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem, VisionConstants.y_ArmAngle[3]));
-    NamedCommands.registerCommand("ShootToSpeaker2m", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem, VisionConstants.y_ArmAngle[4]));
-    NamedCommands.registerCommand("ShootToSpeaker25m", new SpeakerShoot(shooter, shooterPivot, extender, ledSubsystem, VisionConstants.y_ArmAngle[5]));
+    NamedCommands.registerCommand("ShootToSpeakerAuto", new SpeakerShoot(shooter, shooterPivot, extender, 0));
+    NamedCommands.registerCommand("ShootToSpeaker0m", new SpeakerShoot(shooter, shooterPivot, extender, VisionConstants.y_ArmAngle[1]));
+    NamedCommands.registerCommand("ShootToSpeaker1m", new SpeakerShoot(shooter, shooterPivot, extender, VisionConstants.y_ArmAngle[2]));
+    NamedCommands.registerCommand("ShootToSpeaker15m", new SpeakerShoot(shooter, shooterPivot, extender, VisionConstants.y_ArmAngle[3]));
+    NamedCommands.registerCommand("ShootToSpeaker2m", new SpeakerShoot(shooter, shooterPivot, extender, VisionConstants.y_ArmAngle[4]));
+    NamedCommands.registerCommand("ShootToSpeaker25m", new SpeakerShoot(shooter, shooterPivot, extender, VisionConstants.y_ArmAngle[5]));
 
     NamedCommands.registerCommand("IntakeIn", new IntakeIn(intake, extender));
     configureBindings();
@@ -133,28 +135,31 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    new JoystickButton(driverJoystick, 8).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //ps butonu
+    new JoystickButton(driverJoystick, 8).onTrue(new InstantCommand(swerveSubsystem::zeroHeading)); //menu butonu
 
-    new POVButton(driverJoystick, 0).whileTrue(new GoToSpeaker()); // yukarı ok
-    new POVButton(driverJoystick, 180).whileTrue(new GoToSource()); // aşağı ok
-    new POVButton(driverJoystick, 90).whileTrue(new GoToAmp()); // sağ ok
-    new POVButton(driverJoystick, 270).whileTrue(new GoToAmp()); // sol ok
+    new POVButton(driverJoystick, 0).whileTrue(new GoToSpeaker(ledSubsystem)); // yukarı ok
+    new POVButton(driverJoystick, 180).whileTrue(new GoToSource(ledSubsystem)); // aşağı ok
+    new POVButton(driverJoystick, 90).whileTrue(new GoToAmp(ledSubsystem)); // sağ ok
+    new POVButton(driverJoystick, 270).whileTrue(new GoToAmp(ledSubsystem)); // sol ok
 
-    new JoystickButton(driverJoystick, 2).whileTrue(new RotateToNoteWhileDrive(objectDetection, driverJoystick)); // bu daire
-    new JoystickButton(operatorJoystick, 2).whileTrue(new RotateToNoteWhileDrive(objectDetection, driverJoystick)); // bu daire
+    new JoystickButton(driverJoystick, 2).whileTrue(new DriveToNote(objectDetection, swerveSubsystem, driverJoystick, intake, extender, ledSubsystem)); // bu daire
 
-    new JoystickButton(driverJoystick, 3).onTrue(new InstantCommand(swerveSubsystem::switchIdleMode)); // bu kare
     new JoystickButton(driverJoystick, 4).onTrue(new Degree180Turn(swerveSubsystem)); // bu üçgen
 
     new POVButton(operatorJoystick, 270).whileTrue(new RotateToTargetWhileDrive(swerveSubsystem, operatorJoystick)); // daire
 
+    new JoystickButton(operatorJoystick, 2).or(() -> driverJoystick.getRightTriggerAxis() > IntakextenderConstants.kIntakeDeadband).whileTrue(
+      new ShooterAuto(shooter, intake, extender, swerveSubsystem, shooterPivot, driverJoystick)
+    ); // bu daire ve trigger
+
     new JoystickButton(operatorJoystick, 6).whileTrue(new ShooterShoot(
       () -> operatorJoystick.getRawAxis(3),
-      shooter, intake, extender, false, operatorJoystick)); //r1 ve r2
+      shooter, intake, extender, false, operatorJoystick))
+    .whileTrue(new RotateToTargetWhileDrive(swerveSubsystem, driverJoystick)); //r1 ve r2
 
     new JoystickButton(operatorJoystick, 5).whileTrue(new ShooterShoot(
       () -> operatorJoystick.getRawAxis(3),
-      shooter, intake, extender, true, operatorJoystick)); //r1 ve r2
+      shooter, intake, extender, true, operatorJoystick)); //l1 ve r2
     
     new JoystickButton(operatorJoystick, 3).whileTrue(new AmpAngle(shooterPivot)); // kare
     new JoystickButton(operatorJoystick, 1).whileTrue(new ShooterSetAngle(shooterPivot)); // x

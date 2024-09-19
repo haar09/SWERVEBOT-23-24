@@ -13,7 +13,7 @@ public class Extender extends SubsystemBase {
         extenderMotor = new CANSparkMax(IntakextenderConstants.kExtenderMotorId, CANSparkMax.MotorType.kBrushless);
         extenderMotor.setInverted(IntakextenderConstants.kExtenderMotorReversed);
 
-        extenderMotor.setIdleMode(IdleMode.kCoast);
+        extenderMotor.setIdleMode(IdleMode.kBrake);
 
         extenderMotor.burnFlash();
     }

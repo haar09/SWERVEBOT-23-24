@@ -9,12 +9,15 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.GlobalVariables;
+import frc.robot.subsystems.LEDSubsystem;
 
 public class GoToSource extends Command{
     private Command pathCommand;
     private Pose2d targetPose;
+    private final LEDSubsystem ledSubsystem;
 
-    public GoToSource(){
+    public GoToSource(LEDSubsystem ledSubsystem){
+        this.ledSubsystem = ledSubsystem;
     }
 
     @Override
@@ -35,6 +38,8 @@ public class GoToSource extends Command{
                     0.0, // Goal end velocity in meters/sec
                     0.0 // Rotation delay distance in meters. This is how far the robot should travel before attempting to rotate.
             );
+
+            ledSubsystem.isAutodrive = true;
     }
 
     @Override
@@ -44,10 +49,15 @@ public class GoToSource extends Command{
 
     @Override
     public void end(boolean interrupted){
+        ledSubsystem.isAutodrive = false;
     }
 
     @Override
     public boolean isFinished(){
+        if (pathCommand.isFinished()) {
+            ledSubsystem.isAutodrive = false;
+            return true;
+        }
         return false;
     }
 }

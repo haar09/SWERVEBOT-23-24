@@ -72,7 +72,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kBRTurningAbsoluteEncoderOffset
     );
 
-    private AHRS gyro = new AHRS(SPI.Port.kMXP);
+    public AHRS gyro = new AHRS(SPI.Port.kMXP);
     private final Field2d field = new Field2d();
     private GenericEntry resetNavXEntry;
     public final SwerveDrivePoseEstimator poseEstimator;

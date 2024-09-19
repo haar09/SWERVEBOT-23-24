@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class SwerveJoystickCmd extends Command{
@@ -17,10 +18,11 @@ public class SwerveJoystickCmd extends Command{
     private final Supplier<Double> xSpdFunc, ySpdFunc, turnSpdFunc;
     private final Supplier<Boolean> fieldOrientedFunc, slowMode, boost;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+    private final LEDSubsystem ledSubsystem;
     
     public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
             Supplier<Double> xSpdFunc, Supplier<Double> ySpdFunc, Supplier<Double> turnSpdFunc,
-            Supplier<Boolean> fieldOrientedFunc, Supplier<Boolean> slowMode, Supplier<Boolean> boost){
+            Supplier<Boolean> fieldOrientedFunc, Supplier<Boolean> slowMode, Supplier<Boolean> boost, LEDSubsystem ledSubsystem){
         this.swerveSubsystem = swerveSubsystem;
         this.xSpdFunc = xSpdFunc;
         this.ySpdFunc = ySpdFunc;
@@ -31,6 +33,7 @@ public class SwerveJoystickCmd extends Command{
         this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
         this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
+        this.ledSubsystem = ledSubsystem;
         addRequirements(swerveSubsystem);
     }
 
@@ -55,9 +58,11 @@ public class SwerveJoystickCmd extends Command{
         if (boost.get()) {
                 xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveBoostSpeedMetersPerSecond;
                 ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveBoostSpeedMetersPerSecond;
+                ledSubsystem.isBoost = true;
         } else {
                 xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
                 ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+                ledSubsystem.isBoost = false;
         }
         turningSpeed = turningLimiter.calculate(turningSpeed) * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
 

@@ -109,6 +109,7 @@ public class ShooterShoot extends Command{
     public void end(boolean interrupted){
         state = State.START;
         shooter.state = ShooterState.IDLE;
+        shooter.ledSubsystem.isAccelerating = false;
         intake.setOutputPercentage(0);
         extender.setOutputPercentage(0);
         shooter.stopShooter();    

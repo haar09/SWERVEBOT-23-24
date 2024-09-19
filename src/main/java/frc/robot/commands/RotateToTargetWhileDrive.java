@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.PIDConstants;
@@ -19,7 +20,7 @@ public class RotateToTargetWhileDrive extends Command{
     private Translation2d robotToTarget, kSpeakerApriltagPose;
     private XboxController operatorController;
     
-     PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, PIDConstants.kDLimeLightRotate);
+    PIDController thetaController = new PIDController(PIDConstants.kPLimeLightRotate, 0, PIDConstants.kDLimeLightRotate);
 
     public RotateToTargetWhileDrive(SwerveSubsystem swerveSubsystem, XboxController operatorController){
         this.swerveSubsystem = swerveSubsystem;
@@ -60,6 +61,6 @@ public class RotateToTargetWhileDrive extends Command{
 
     @Override
     public boolean isFinished(){
-        return false;
+        return !SmartDashboard.getBoolean("Camera Automation", true);
     }
 }

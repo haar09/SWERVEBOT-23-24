@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.GlobalVariables;
 import frc.robot.Constants.IntakextenderConstants;
 import frc.robot.subsystems.Extender;
-import frc.robot.subsystems.LEDSubsystem;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Shooter.ShooterState;
 import frc.robot.subsystems.ShooterPivot;
@@ -18,16 +17,13 @@ public class SpeakerShoot extends Command{
     private double start;
     private double desiredAngle;
 
-    private final LEDSubsystem ledSubsystem;
-
-    public SpeakerShoot(Shooter shooter, ShooterPivot pivot ,Extender extender, LEDSubsystem ledSubsystem, double desiredAngle){
+    public SpeakerShoot(Shooter shooter, ShooterPivot pivot ,Extender extender, double desiredAngle){
         this.shooter = shooter;
         this.m_ShooterPivot = pivot;
         this.extender = extender;
-        this.ledSubsystem = ledSubsystem;
         this.desiredAngle = desiredAngle;
         ending = false;
-        addRequirements(shooter, m_ShooterPivot, extender, ledSubsystem); 
+        addRequirements(shooter, m_ShooterPivot, extender); 
     }
 
     @Override
@@ -43,7 +39,6 @@ public class SpeakerShoot extends Command{
                 desiredAngle = GlobalVariables.getInstance().speakerToAngle();
             }
             m_ShooterPivot.setDesiredAngle(desiredAngle);
-            ledSubsystem.setColor(0, 0, 255);
             if (shooter.state == ShooterState.READY) {
                 start = Timer.getFPGATimestamp();
                 while (Timer.getFPGATimestamp() - start < 0.05) {

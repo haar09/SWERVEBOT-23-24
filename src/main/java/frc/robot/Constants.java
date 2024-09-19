@@ -113,8 +113,8 @@ public final class Constants {
                                 new Rotation3d(0, kLimeLightMountAngleRadians, 0)
                                 );
     public static final Transform3d kRobotToCam1 = //OV9281 001
-                new Transform3d(new Translation3d(-0.070937, 0.264048, 0.212),
-                                new Rotation3d(0, Math.toRadians(-28.1), Math.toRadians(150))
+                new Transform3d(new Translation3d(0.874014, -0.479552, 0.61602),
+                                new Rotation3d(0, Math.toRadians(-15), 0)
                                 );
     public static final Transform3d kRobotToCam2 = //OV9281 002
                 new Transform3d(new Translation3d(-0.070937, -0.264048, 0.212),
@@ -129,9 +129,9 @@ public final class Constants {
     public static final UnivariateInterpolator angleInterpolator = new SplineInterpolator();
     public static final UnivariateFunction angleFunction = angleInterpolator.interpolate(x_DistanceToSpeaker, y_ArmAngle);
 
-    public static final Matrix<N3, N1> kLimelightStdDevs = VecBuilder.fill(4, 4, 999999);
+    public static final Matrix<N3, N1> kLimelightStdDevs = VecBuilder.fill(4, 4, 50);
 
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.5, 0.5, 8);
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(0.3, 0.3, 5);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.25, 0.25, 3);
   }
 
@@ -139,10 +139,10 @@ public final class Constants {
     public static final double kPTurning = 0.45;
     public static final double kDTurning = 0.001;
 
-    public static final double kPLimeLightRotate = 0.075;
+    public static final double kPLimeLightRotate = 0.078;
     public static final double kDLimeLightRotate = 0.00001;
 
-    public static final double kPObjectRotate = 0.07;
+    public static final double kPObjectRotate = 0.08;
     public static final double kDObjectRotate = 0.0015;
 
     public static final double kP180Rotate = 0.045;
